@@ -1,0 +1,50 @@
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-android-extensions'
+
+kapt {
+    useBuildCache = true
+}
+
+android {
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    compileSdkVersion versions.compile_sdk
+    flavorDimensions "env"
+
+    defaultConfig {
+        minSdkVersion versions.min_sdk
+        targetSdkVersion versions.compile_sdk
+        vectorDrawables.useSupportLibrary = true
+    }
+
+    productFlavors {
+        dev {}
+        production {}
+    }
+
+    sourceSets {
+        dev {
+            java.srcDirs += 'src/server/java'
+        }
+        production {
+            java.srcDirs += 'src/server/java'
+        }
+    }
+
+    buildTypes {
+        debug {
+            crunchPngs false
+        }
+
+        release {
+            crunchPngs true
+            zipAlignEnabled true
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), "$project_directory/mobile/proguard-rules.pro"
+        }
+    }
+}

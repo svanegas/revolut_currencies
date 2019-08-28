@@ -1,2 +1,2 @@
-include ':mobile'
-rootProject.name='Revolut Currencies'
+include ':mobile',
+        ':revolut-base'

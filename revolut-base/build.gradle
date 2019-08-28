@@ -1,0 +1,53 @@
+apply from: "$project_directory/revolut-base/library.gradle"
+
+android {
+    defaultConfig {
+        buildConfigField "boolean", "LOGS", "true"
+    }
+
+    flavorDimensions "env"
+
+    productFlavors {
+        dev {
+            dimension = "env"
+        }
+        production {
+            dimension = "env"
+            buildConfigField "boolean", "LOGS", "false"
+        }
+    }
+
+    buildTypes {
+        debug {
+            buildConfigField "boolean", "LOGS", "true"
+            // this is here, so that productionDebug can have logs
+        }
+    }
+}
+
+dependencies {
+    // androidx
+    api "androidx.constraintlayout:constraintlayout:${versions.androidx_constraintlayout}"
+    api "androidx.appcompat:appcompat:${versions.androidx_appcompat}"
+    api "androidx.recyclerview:recyclerview:${versions.androidx_recyclerview}"
+
+    api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${versions.kotlin}"
+
+    // retrofit + okhttp + gson
+    api "com.google.code.gson:gson:${versions.gson}"
+    api "com.squareup.okhttp3:okhttp:${versions.okhttp}"
+    api "com.squareup.okhttp3:logging-interceptor:${versions.okhttp}"
+    api "com.squareup.retrofit2:retrofit:${versions.retrofit}"
+    api("com.squareup.retrofit2:converter-gson:${versions.retrofit}") {
+        transitive = true
+    }
+    api "com.squareup.retrofit2:adapter-rxjava2:${versions.retrofit}"
+
+    // rxjava
+    api "io.reactivex.rxjava2:rxkotlin:${versions.rx_rxkotlin}"
+    api "io.reactivex.rxjava2:rxandroid:${versions.rx_rxandroid}"
+    api "io.reactivex.rxjava2:rxjava:${versions.rx_rxjava}"
+
+    // Timber
+    api "com.jakewharton.timber:timber:${versions.timber}"
+}
