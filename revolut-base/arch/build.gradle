@@ -1,0 +1,5 @@
+apply from: "$project_directory/revolut-base/library.gradle"
+
+dependencies {
+    implementation project(':revolut-base')
+}
