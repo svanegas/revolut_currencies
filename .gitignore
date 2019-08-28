@@ -125,7 +125,6 @@ hs_err_pid*
 /*/local.properties
 /*/out
 /*/*/build
-/*/*/production
 *.ipr
 *~
 *.swp
