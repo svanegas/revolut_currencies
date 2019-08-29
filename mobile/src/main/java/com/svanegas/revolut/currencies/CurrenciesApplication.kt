@@ -12,4 +12,9 @@ class CurrenciesApplication : BaseApplication() {
             .application(this)
             .build()
     }
+
+    override fun onCreate() {
+        appComponent.inject(this)
+        super.onCreate()
+    }
 }

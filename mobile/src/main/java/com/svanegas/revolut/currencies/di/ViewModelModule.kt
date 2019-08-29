@@ -1,4 +1,4 @@
-package com.svanegas.revolut.currencies.base.di
+package com.svanegas.revolut.currencies.di
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

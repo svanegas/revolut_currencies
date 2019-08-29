@@ -8,9 +8,9 @@ import javax.inject.Inject
 
 abstract class BaseApplication : Application(), HasAndroidInjector {
     @Inject
-    lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Any>
+    lateinit var androidInjector: DispatchingAndroidInjector<Any>
 
     override fun androidInjector(): AndroidInjector<Any> = AndroidInjector {
-        dispatchingAndroidInjector.maybeInject(it)
+        androidInjector.maybeInject(it)
     }
 }

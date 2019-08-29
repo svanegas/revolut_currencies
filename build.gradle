@@ -13,6 +13,7 @@ buildscript {
                 'androidx_appcompat'       : '1.1.0-rc01',
                 'androidx_constraintlayout': '2.0.0-beta2',
                 'androidx_recyclerview'    : '1.1.0-beta03',
+                'androidx_lifecycle'       : '2.1.0-rc01',
 
                 'okhttp'                   : '4.1.0',
                 'retrofit'                 : '2.6.1',

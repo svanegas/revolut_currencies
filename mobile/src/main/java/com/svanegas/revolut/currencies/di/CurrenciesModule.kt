@@ -22,5 +22,5 @@ abstract class CurrenciesModule {
     @Binds
     @IntoMap
     @ViewModelKey(CurrenciesViewModel::class)
-    abstract fun bindCurrenciesViewModel(mainViewModel: CurrenciesViewModel): ViewModel
+    abstract fun bindCurrenciesViewModel(currenciesViewModel: CurrenciesViewModel): ViewModel
 }
