@@ -1,6 +1,7 @@
-package com.svanegas.revolut.currencies
+package com.svanegas.revolut.currencies.ui
 
 import android.os.Bundle
+import com.svanegas.revolut.currencies.R
 import com.svanegas.revolut.currencies.base.arch.BaseActivity
 
 class CurrenciesActivity : BaseActivity() {
