@@ -1,0 +1,29 @@
+def generateVersionCode() {
+    return ext.version_major * 100000 + ext.version_minor * 1000 + ext.version_patch
+}
+
+def generateVersionName() {
+    String versionName = "${ext.version_major}.${ext.version_minor}.${ext.version_patch}"
+    if (ext.version_classifier == null && ext.is_snapshot) {
+        ext.version_classifier = "SNAPSHOT"
+    }
+
+    if (ext.version_classifier != null) {
+        versionName += "-" + ext.version_classifier
+    }
+    return versionName
+}
+
+def renameArtifact(variant, apkName) {
+    variant.outputs.all {
+        output ->
+            def date = new Date().format('yyyyMMdd')
+            outputFileName = "${apkName}-${variant.versionName}-${variant.versionCode}-${date}-${variant.name}.apk"
+    }
+}
+
+ext {
+    generateVersionCode = this.&generateVersionCode
+    generateVersionName = this.&generateVersionName
+    renameArtifact = this.&renameArtifact
+}

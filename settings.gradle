@@ -1,3 +1,6 @@
 include ':mobile',
         ':revolut-base',
         ':revolut-base:arch'
+
+rootProject.name='Currencies'
+

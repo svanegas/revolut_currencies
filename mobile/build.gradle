@@ -1,14 +1,26 @@
 apply plugin: 'com.android.application'
 apply from: "$project_directory/common.gradle"
+apply from: 'utils.gradle'
+
+ext {
+    version_major = 0
+    version_minor = 0
+    version_patch = 1
+    version_classifier = null
+    is_snapshot = true
+}
 
 android {
     defaultConfig {
         applicationId "com.svanegas.revolut.currencies"
+        versionCode generateVersionCode()
+        versionName generateVersionName()
     }
 
     productFlavors {
         dev {
             dimension = "env"
+            versionNameSuffix "-dev"
             applicationIdSuffix ".dev"
         }
         production {
@@ -17,18 +29,17 @@ android {
     }
 
     buildTypes {
+        debug {
+            versionNameSuffix "-debug"
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
-    applicationVariants.configureEach { variant ->
-        // rename apk
-        variant.outputs.each { output ->
-            def date = new Date().format('yyyyMMdd')
-            output.outputFileName = "${project.name}-${variant.versionName}-${variant.versionCode}-${date}-${variant.name}.apk"
-        }
+    applicationVariants.all { variant ->
+        renameArtifact(variant, "${rootProject.name}")
     }
 }
 
