@@ -5,8 +5,15 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.svanegas.revolut.currencies.R
 import com.svanegas.revolut.currencies.base.arch.BaseFragment
+import com.svanegas.revolut.currencies.base.arch.BaseView
+
+interface CurrenciesView : BaseView
 
 class CurrenciesFragment : BaseFragment() {
+
+    companion object {
+        fun newInstance() = CurrenciesFragment()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

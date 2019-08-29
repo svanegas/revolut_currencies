@@ -1,6 +1,7 @@
 package com.svanegas.revolut.currencies.ui
 
-import androidx.lifecycle.ViewModel
+import com.svanegas.revolut.currencies.base.arch.BaseViewModel
+import javax.inject.Inject
 
-class CurrenciesViewModel : ViewModel()
+class CurrenciesViewModel @Inject constructor() : BaseViewModel()
 
