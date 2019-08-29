@@ -23,9 +23,9 @@ android {
         }
     }
 
-    applicationVariants.configureEach {variant ->
+    applicationVariants.configureEach { variant ->
         // rename apk
-        variant.outputs.each {output ->
+        variant.outputs.each { output ->
             def date = new Date().format('yyyyMMdd')
             output.outputFileName = "${project.name}-${variant.versionName}-${variant.versionCode}-${date}-${variant.name}.apk"
         }
@@ -36,4 +36,5 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation project(':revolut-base')
+    implementation project(':revolut-base:arch')
 }
