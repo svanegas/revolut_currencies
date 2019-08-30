@@ -8,3 +8,8 @@ data class CurrencyResponse(
     @SerializedName("rates")
     val rates: CurrencyMap
 )
+
+data class Currency(
+    val symbol: String,
+    val value: Double
+)
