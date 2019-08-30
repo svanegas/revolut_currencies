@@ -2,19 +2,16 @@ package com.svanegas.revolut.currencies.di
 
 import android.app.Application
 import com.svanegas.revolut.currencies.CurrenciesApplication
-import com.svanegas.revolut.currencies.base.di.AppModule
+import com.svanegas.revolut.currencies.base.di.AppCommonModule
 import dagger.BindsInstance
 import dagger.Component
-import dagger.android.AndroidInjectionModule
 import javax.inject.Singleton
 
 @Singleton
 @Component(
     modules = [
-        AndroidInjectionModule::class,
-        AppModule::class,
-        ViewModelModule::class,
-        CurrenciesModule::class
+        BaseModule::class,
+        CurrencyModule::class
     ]
 )
 interface AppComponent {

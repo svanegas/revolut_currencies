@@ -48,4 +48,5 @@ dependencies {
 
     implementation project(':revolut-base')
     implementation project(':revolut-base:arch')
+    implementation project(':revolut-base:rest')
 }

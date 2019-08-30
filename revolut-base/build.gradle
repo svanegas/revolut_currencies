@@ -10,9 +10,12 @@ android {
     productFlavors {
         dev {
             dimension = "env"
+            // TODO: Use Dev base URL
+            buildConfigField "String", "REST_BASE_URL", "\"https://revolut.duckdns.org/\""
         }
         production {
             dimension = "env"
+            buildConfigField "String", "REST_BASE_URL", "\"https://revolut.duckdns.org/\""
             buildConfigField "boolean", "LOGS", "false"
         }
     }
