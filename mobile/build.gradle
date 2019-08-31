@@ -5,7 +5,7 @@ apply from: 'utils.gradle'
 
 ext {
     version_major = 0
-    version_minor = 0
+    version_minor = 1
     version_patch = 1
     version_classifier = null
     is_snapshot = true
@@ -29,17 +29,38 @@ android {
         }
     }
 
+    signingConfigs {
+        release {
+            // passwords and alias are obtained via askForPasswords task
+            storeFile file("$project_directory/${project.property('keystore.file')}")
+            storePassword ""
+            keyAlias ""
+            keyPassword ""
+        }
+    }
+
     buildTypes {
         debug {
             versionNameSuffix "-debug"
         }
         release {
+            signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
     applicationVariants.all { variant ->
+        if (variant.buildType.name == "release") {
+            // package task is dependent on askForPasswords
+            def packageTask = tasks.named("package${variant.name.capitalize()}")
+
+            // adds signing for release assemble tasks
+            packageTask.configure {
+                dependsOn("askForPasswords")
+            }
+        }
+
         renameArtifact(variant, "${rootProject.name}")
     }
 }

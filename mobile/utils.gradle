@@ -1,3 +1,19 @@
+tasks.register("askForPasswords") {
+    def keystorePropertiesFile = new File((String) project.property("keystore.properties"))
+
+    if (!project.hasProperty("keystore.properties") || !keystorePropertiesFile.exists()) {
+        throw Exception("keystore.properties file was not found!")
+    }
+
+    println "Loading keystore passwords from property file..."
+    Properties properties = new Properties()
+    properties.load(new FileInputStream(keystorePropertiesFile))
+
+    android.signingConfigs.release.storePassword = properties['keystore.store.password']
+    android.signingConfigs.release.keyAlias = properties['keystore.key.alias']
+    android.signingConfigs.release.keyPassword = properties['keystore.key.password']
+}
+
 def generateVersionCode() {
     return ext.version_major * 100000 + ext.version_minor * 1000 + ext.version_patch
 }
