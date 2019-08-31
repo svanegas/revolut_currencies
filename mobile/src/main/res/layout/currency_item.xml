@@ -53,7 +53,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif"
             android:maxLines="1"
-            android:text='@{"" + data.content.value}'
+            android:text='@{data.content.name}'
             android:textColor="@color/gray"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="@id/flag"
