@@ -62,6 +62,13 @@ dependencies {
     api "com.google.dagger:dagger-android:${versions.dagger}"
     api "com.google.dagger:dagger-android-support:${versions.dagger}"
 
+    // Firebase
+    api "com.google.firebase:firebase-core:${versions.firebase_core}"
+    api "com.google.firebase:firebase-analytics:${versions.firebase_analytics}"
+
+    // Crashlytics
+    api "com.crashlytics.sdk.android:crashlytics:${versions.crashlytics}"
+
     // Timber
     api "com.jakewharton.timber:timber:${versions.timber}"
 }

@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "110042451202",
+    "firebase_url": "https://revolut-currencies.firebaseio.com",
+    "project_id": "revolut-currencies",
+    "storage_bucket": "revolut-currencies.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:110042451202:android:8bbf362757b48a4a",
+        "android_client_info": {
+          "package_name": "com.svanegas.revolut.currencies"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "110042451202-puimb9dabe8pkcs8jmp5e2293angh599.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvJEyXiVcDypo8HXjUXIXCWf3CC2mwxdU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "110042451202-puimb9dabe8pkcs8jmp5e2293angh599.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:110042451202:android:759152b7aba9b7bb",
+        "android_client_info": {
+          "package_name": "com.svanegas.revolut.currencies.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "110042451202-puimb9dabe8pkcs8jmp5e2293angh599.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvJEyXiVcDypo8HXjUXIXCWf3CC2mwxdU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "110042451202-puimb9dabe8pkcs8jmp5e2293angh599.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
