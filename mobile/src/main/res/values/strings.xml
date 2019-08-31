@@ -1,2 +1,3 @@
 <resources>
+    <string name="convert_input_hint">0</string>
 </resources>
