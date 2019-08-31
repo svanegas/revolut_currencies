@@ -10,9 +10,11 @@ class CurrenciesActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_base)
 
-        supportFragmentManager.beginTransaction().apply {
-            replace(R.id.container_fragment, CurrenciesFragment.newInstance())
-            commit()
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction().apply {
+                replace(R.id.container_fragment, CurrenciesFragment.newInstance())
+                commit()
+            }
         }
     }
 }
