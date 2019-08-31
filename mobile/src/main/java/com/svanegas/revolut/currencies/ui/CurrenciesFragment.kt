@@ -39,11 +39,12 @@ class CurrenciesFragment : BaseFragmentViewModel<CurrenciesViewModel, FragmentCu
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel.currencies.observe(viewLifecycleOwner, Observer {
-            currenciesAdapter.submitList(it)
+            val sortedCurrencies = viewModel.sortCurrenciesByDate(it.values.toList())
+            currenciesAdapter.submitList(sortedCurrencies)
         })
     }
 
     override fun onCurrencyClick(currency: CurrencyItemViewModel) {
-
+        viewModel.updateCurrencyBaseAtDate(currency)
     }
 }
