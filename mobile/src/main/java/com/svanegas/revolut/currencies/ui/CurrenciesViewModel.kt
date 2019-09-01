@@ -33,7 +33,7 @@ class CurrenciesViewModel @Inject constructor(
             .map { (currency, currencyNames) ->
                 currency.copy(name = currencyNames[currency.symbol].orEmpty())
             }
-            .map { CurrencyItemViewModel(it, appContext) }
+            .map { CurrencyItemViewModel(it, this, appContext) }
             .toMap { it.content.symbol }
             .subscribeBy(
                 onSuccess = { _currencies.value = it },
@@ -53,11 +53,11 @@ class CurrenciesViewModel @Inject constructor(
     fun sortCurrenciesByDate(currencyList: List<CurrencyItemViewModel>) = currencyList
         .sortedByDescending { it.content.baseAt }
 
-    fun updateCurrencyBaseAtDate(currency: CurrencyItemViewModel) {
+    fun updateCurrencyBaseAtDate(currencyViewModel: CurrencyItemViewModel) {
         val map = currencies.value!!.toMutableMap()
-        val symbol = currency.content.symbol
-        val updatedCurrency = currency.content.copy(baseAt = Date())
-        map[symbol] = CurrencyItemViewModel(updatedCurrency, appContext)
+        val symbol = currencyViewModel.content.symbol
+        val updatedCurrency = currencyViewModel.content.copy(baseAt = Date())
+        map[symbol] = CurrencyItemViewModel(updatedCurrency, this, appContext)
 
         _currencies.value = map
     }
