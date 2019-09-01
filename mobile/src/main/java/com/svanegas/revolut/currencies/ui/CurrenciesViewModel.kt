@@ -27,6 +27,16 @@ class CurrenciesViewModel @Inject constructor(
         fetchData()
     }
 
+    fun sortCurrenciesByDate(currencyList: List<Currency>) = currencyList
+        .sortedByDescending { it.baseAt }
+
+    fun setCurrencyAsBase(tag: String) {
+        val oldCurrency = currencies.value?.get(tag) ?: return
+        val updatedCurrency = oldCurrency.copy(baseAt = Date())
+        _currencies.value?.put(oldCurrency.symbol, updatedCurrency)
+        _currencies.notifyChange()
+    }
+
     private fun fetchData() {
         compositeDisposable += currenciesRepository
             .fetchCurrencies()
@@ -45,20 +55,18 @@ class CurrenciesViewModel @Inject constructor(
         .fetchCurrencies(selectedCurrency)
         .flattenAsFlowable { it.rates.entries }
         .map { Currency(it.key, it.value) }
+        .startWith(getDefaultCurrency())
 
     private fun CurrenciesRepository.fetchNames() = this
         .fetchCurrencyNames()
         .toFlowable()
 
-    fun sortCurrenciesByDate(currencyList: List<Currency>) = currencyList
-        .sortedByDescending { it.baseAt }
+    private fun getDefaultCurrency() = Currency(
+        symbol = "EUR",
+        value = 1.0,
+        baseAt = Date()
+    )
 
-    fun setCurrencyAsBase(tag: String) {
-        val oldCurrency = currencies.value?.get(tag) ?: return
-        val updatedCurrency = oldCurrency.copy(baseAt = Date())
-        _currencies.value?.put(oldCurrency.symbol, updatedCurrency)
-        _currencies.notifyChange()
-    }
 
 //    fun updateCurrencyBaseAtDate(currencyViewModel: CurrencyItemViewModel) {
 //        val map = currencies.value!!.toMutableMap()
