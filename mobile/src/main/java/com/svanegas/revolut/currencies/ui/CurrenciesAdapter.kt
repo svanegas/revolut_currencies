@@ -41,7 +41,7 @@ class NewCurrenciesAdapter(
                 val newCurrency = currencyList[newItemPosition]
                 return when {
                     newCurrency.symbol != oldCurrency.symbol -> false
-                    newCurrency.value != oldCurrency.value -> false
+                    newCurrency.ratio != oldCurrency.ratio -> false
                     else -> true
                 }
             }

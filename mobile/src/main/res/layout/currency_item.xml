@@ -69,7 +69,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/convert_input_hint"
             android:inputType="numberDecimal"
-            android:text="@={`` + data.value}"
+            android:text="@={data.amount}"
             android:textColor="@color/black"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"

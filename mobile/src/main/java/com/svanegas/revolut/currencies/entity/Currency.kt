@@ -13,7 +13,8 @@ data class CurrencyResponse(
 
 data class Currency(
     val symbol: String = "",
-    var value: Double = 0.0,
+    var ratio: Double = 1.0,
     val name: String = "",
-    val baseAt: Date? = null
+    val baseAt: Date? = null,
+    var amount: String = ""
 )

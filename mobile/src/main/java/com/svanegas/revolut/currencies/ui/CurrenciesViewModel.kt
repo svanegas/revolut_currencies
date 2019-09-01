@@ -10,6 +10,7 @@ import io.reactivex.rxkotlin.combineLatest
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import timber.log.Timber
+import java.text.NumberFormat
 import java.util.*
 import javax.inject.Inject
 
@@ -27,15 +28,17 @@ class CurrenciesViewModel @Inject constructor(
         fetchData()
     }
 
-    fun sortCurrenciesByDate(currencyList: List<Currency>) = currencyList
-        .sortedByDescending { it.baseAt }
-
     fun setCurrencyAsBase(tag: String) {
         val oldCurrency = currencies.value?.get(tag) ?: return
         val updatedCurrency = oldCurrency.copy(baseAt = Date())
         _currencies.value?.put(oldCurrency.symbol, updatedCurrency)
         _currencies.notifyChange()
     }
+
+    fun prepareCurrenciesToPopulate(currencies: List<Currency>): List<Currency> = currencies
+        .sortedByDate()
+        .convertRates()
+        .toList()
 
     private fun fetchData() {
         compositeDisposable += currenciesRepository
@@ -63,18 +66,40 @@ class CurrenciesViewModel @Inject constructor(
 
     private fun getDefaultCurrency() = Currency(
         symbol = "EUR",
-        value = 1.0,
-        baseAt = Date()
+        baseAt = Date(),
+        amount = "10"
     )
 
+    private fun List<Currency>.sortedByDate() = this
+        .sortedByDescending { it.baseAt }
 
-//    fun updateCurrencyBaseAtDate(currencyViewModel: CurrencyItemViewModel) {
-//        val map = currencies.value!!.toMutableMap()
-//        val symbol = currencyViewModel.content.symbol
-//        val updatedCurrency = currencyViewModel.content.copy(baseAt = Date())
-//        map[symbol] = CurrencyItemViewModel(updatedCurrency, this)
-//
-//        _currencies.value = map
-//    }
+
+    private fun List<Currency>.convertRates(): List<Currency> {
+        val source = this.firstOrNull() ?: return this
+
+        return this
+            .mapIndexed { index, item ->
+                if (index == 0) item
+                else {
+                    item.amount = convertValue(source.amount, item.ratio)
+                    item
+                }
+            }
+            .toList()
+    }
+
+    private fun convertValue(amount: String, ratio: Double): String {
+        var result: Double
+        return try {
+            result = amount.toDouble()
+            result *= ratio
+
+            NumberFormat
+                .getInstance(Locale.getDefault())
+                .format(result)
+        } catch (ex: NumberFormatException) {
+            ""
+        }
+    }
 }
 

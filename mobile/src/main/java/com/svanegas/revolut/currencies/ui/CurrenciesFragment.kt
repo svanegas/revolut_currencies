@@ -43,8 +43,8 @@ class CurrenciesFragment : BaseFragmentViewModel<CurrenciesViewModel, FragmentCu
         viewModel.currencies.observe(viewLifecycleOwner, Observer {
             // TODO: Is doubled maybe because initially is emptyList
             Timber.d("CACA - Venga")
-            val sortedCurrencies = viewModel.sortCurrenciesByDate(it.values.toList())
-            newCurrenciesAdapter.setCurrencyList(sortedCurrencies)
+            val currencies = viewModel.prepareCurrenciesToPopulate(it.values.toList())
+            newCurrenciesAdapter.setCurrencyList(currencies)
         })
     }
 
