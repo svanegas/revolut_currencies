@@ -3,13 +3,15 @@ package com.svanegas.revolut.currencies.ui
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.svanegas.revolut.currencies.base.arch.BaseViewModel
+import com.svanegas.revolut.currencies.base.utility.applySchedulers
 import com.svanegas.revolut.currencies.entity.Currency
 import com.svanegas.revolut.currencies.repository.CurrenciesRepository
+import io.reactivex.Single
 import io.reactivex.rxkotlin.combineLatest
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import timber.log.Timber
-import java.util.*
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class CurrenciesViewModel @Inject constructor(
@@ -19,8 +21,8 @@ class CurrenciesViewModel @Inject constructor(
     // TODO: Move to LiveData
     private val selectedCurrency = "EUR"
 
-    private val _currencies = MutableLiveData<Map<String, CurrencyItemViewModel>>(emptyMap())
-    val currencies: LiveData<Map<String, CurrencyItemViewModel>> = _currencies
+    private val _currencies = MutableLiveData<Map<String, Currency>>(emptyMap())
+    val currencies: LiveData<Map<String, Currency>> = _currencies
 
     init {
         fetchData()
@@ -33,8 +35,8 @@ class CurrenciesViewModel @Inject constructor(
             .map { (currency, currencyNames) ->
                 currency.copy(name = currencyNames[currency.symbol].orEmpty())
             }
-            .map { CurrencyItemViewModel(it, this, appContext) }
-            .toMap { it.content.symbol }
+//            .map { CurrencyItemViewModel(it, this) }
+            .toMap { it.symbol }
             .subscribeBy(
                 onSuccess = { _currencies.value = it },
                 onError = { Timber.e(it) }
@@ -50,16 +52,16 @@ class CurrenciesViewModel @Inject constructor(
         .fetchCurrencyNames()
         .toFlowable()
 
-    fun sortCurrenciesByDate(currencyList: List<CurrencyItemViewModel>) = currencyList
-        .sortedByDescending { it.content.baseAt }
+    fun sortCurrenciesByDate(currencyList: List<Currency>) = currencyList
+        .sortedByDescending { it.baseAt }
 
-    fun updateCurrencyBaseAtDate(currencyViewModel: CurrencyItemViewModel) {
-        val map = currencies.value!!.toMutableMap()
-        val symbol = currencyViewModel.content.symbol
-        val updatedCurrency = currencyViewModel.content.copy(baseAt = Date())
-        map[symbol] = CurrencyItemViewModel(updatedCurrency, this, appContext)
-
-        _currencies.value = map
-    }
+//    fun updateCurrencyBaseAtDate(currencyViewModel: CurrencyItemViewModel) {
+//        val map = currencies.value!!.toMutableMap()
+//        val symbol = currencyViewModel.content.symbol
+//        val updatedCurrency = currencyViewModel.content.copy(baseAt = Date())
+//        map[symbol] = CurrencyItemViewModel(updatedCurrency, this)
+//
+//        _currencies.value = map
+//    }
 }
 

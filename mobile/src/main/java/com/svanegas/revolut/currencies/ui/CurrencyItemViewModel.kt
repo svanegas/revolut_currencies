@@ -1,16 +1,14 @@
 package com.svanegas.revolut.currencies.ui
 
-import android.content.Context
 import android.view.View
 import androidx.databinding.BaseObservable
 import com.svanegas.revolut.currencies.base.ui.adapter.TheSame
 import com.svanegas.revolut.currencies.entity.Currency
 
 
-open class CurrencyItemViewModel constructor(
+open class CurrencyItemViewModel(
     val content: Currency,
-    private val currenciesViewModel: CurrenciesViewModel,
-    val appContext: Context
+    private val currenciesViewModel: CurrenciesViewModel
 ) : BaseObservable(), TheSame {
 
     override fun isItemTheSame(other: Any): Boolean = when {
@@ -27,6 +25,6 @@ open class CurrencyItemViewModel constructor(
     }
 
     fun getOnFocusChangeListener() = View.OnFocusChangeListener { _, isFocused ->
-        if (isFocused) currenciesViewModel.updateCurrencyBaseAtDate(this)
+//        if (isFocused) currenciesViewModel.updateCurrencyBaseAtDate(this)
     }
 }
