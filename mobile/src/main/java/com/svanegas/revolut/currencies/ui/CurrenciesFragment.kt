@@ -20,6 +20,7 @@ class CurrenciesFragment : BaseFragmentViewModel<CurrenciesViewModel, FragmentCu
     }
 
     private lateinit var newCurrenciesAdapter: NewCurrenciesAdapter
+    private var lastFocusedSymbol = ""
 
     override fun setupViewModel() = findViewModel<CurrenciesViewModel>()
 
@@ -48,6 +49,13 @@ class CurrenciesFragment : BaseFragmentViewModel<CurrenciesViewModel, FragmentCu
     }
 
     override fun getOnFocusChangeListener() = View.OnFocusChangeListener { view, isFocused ->
-        if (isFocused) Timber.d("CACA - isFocused: $isFocused | tag: ${view.tag}")
+        if (isFocused) {
+            val symbol = view.tag?.toString()
+            if (symbol != null && symbol != lastFocusedSymbol) {
+                Timber.d("CACA - Setting as base with $symbol")
+                lastFocusedSymbol = symbol
+                viewModel.setCurrencyAsBase(symbol)
+            }
+        }
     }
 }
