@@ -16,8 +16,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="72dp"
-        android:onClick="@{() -> view.onCurrencyClick(data)}">
+        android:layout_height="72dp">
+        <!-- TODO: enable full row listener android:onClick="@{() -> view.onCurrencyClick(data)}"-->
 
         <ImageView
             android:id="@+id/flag"
@@ -75,7 +75,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/keyline_end"
             app:layout_constraintStart_toEndOf="@id/symbol"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:onFocusChange="@{data.onFocusChangeListener}" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/keyline_start"

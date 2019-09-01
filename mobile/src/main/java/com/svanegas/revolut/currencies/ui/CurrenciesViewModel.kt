@@ -9,6 +9,7 @@ import io.reactivex.rxkotlin.combineLatest
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
 
 class CurrenciesViewModel @Inject constructor(
@@ -18,8 +19,8 @@ class CurrenciesViewModel @Inject constructor(
     // TODO: Move to LiveData
     private val selectedCurrency = "EUR"
 
-    private val _currencies = MutableLiveData<List<CurrencyItemViewModel>>(emptyList())
-    val currencies: LiveData<List<CurrencyItemViewModel>> = _currencies
+    private val _currencies = MutableLiveData<Map<String, CurrencyItemViewModel>>(emptyMap())
+    val currencies: LiveData<Map<String, CurrencyItemViewModel>> = _currencies
 
     init {
         fetchData()
@@ -32,8 +33,8 @@ class CurrenciesViewModel @Inject constructor(
             .map { (currency, currencyNames) ->
                 currency.copy(name = currencyNames[currency.symbol].orEmpty())
             }
-            .map { CurrencyItemViewModel(it, appContext) }
-            .toList()
+            .map { CurrencyItemViewModel(it, this, appContext) }
+            .toMap { it.content.symbol }
             .subscribeBy(
                 onSuccess = { _currencies.value = it },
                 onError = { Timber.e(it) }
@@ -48,5 +49,17 @@ class CurrenciesViewModel @Inject constructor(
     private fun CurrenciesRepository.fetchNames() = this
         .fetchCurrencyNames()
         .toFlowable()
+
+    fun sortCurrenciesByDate(currencyList: List<CurrencyItemViewModel>) = currencyList
+        .sortedByDescending { it.content.baseAt }
+
+    fun updateCurrencyBaseAtDate(currencyViewModel: CurrencyItemViewModel) {
+        val map = currencies.value!!.toMutableMap()
+        val symbol = currencyViewModel.content.symbol
+        val updatedCurrency = currencyViewModel.content.copy(baseAt = Date())
+        map[symbol] = CurrencyItemViewModel(updatedCurrency, this, appContext)
+
+        _currencies.value = map
+    }
 }
 
