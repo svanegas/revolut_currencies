@@ -6,12 +6,12 @@
     <data>
 
         <variable
-            name="view"
-            type="com.svanegas.revolut.currencies.ui.CurrencyItemView" />
+            name="callback"
+            type="com.svanegas.revolut.currencies.ui.CurrencyInteractionCallback" />
 
         <variable
             name="data"
-            type="com.svanegas.revolut.currencies.ui.CurrencyItemViewModel" />
+            type="com.svanegas.revolut.currencies.entity.Currency" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif"
             android:maxLines="1"
-            android:text="@{data.content.symbol}"
+            android:text="@{data.symbol}"
             android:textColor="@color/black"
             android:textFontWeight="500"
             android:textSize="16sp"
@@ -54,7 +54,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif"
             android:maxLines="1"
-            android:text='@{data.content.name}'
+            android:text='@{data.name}'
             android:textColor="@color/gray"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="@id/flag"
@@ -69,14 +69,14 @@
             android:layout_height="wrap_content"
             android:hint="@string/convert_input_hint"
             android:inputType="numberDecimal"
-            android:text='@{"" + data.content.value}'
+            android:text="@={`` + data.value}"
             android:textColor="@color/black"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/keyline_end"
             app:layout_constraintStart_toEndOf="@id/symbol"
             app:layout_constraintTop_toTopOf="parent"
-            app:onFocusChange="@{data.onFocusChangeListener}" />
+            app:onFocusChange="@{callback.onFocusChangeListener}" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/keyline_start"

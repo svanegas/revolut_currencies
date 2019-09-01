@@ -3,15 +3,12 @@ package com.svanegas.revolut.currencies.ui
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.svanegas.revolut.currencies.base.arch.BaseViewModel
-import com.svanegas.revolut.currencies.base.utility.applySchedulers
 import com.svanegas.revolut.currencies.entity.Currency
 import com.svanegas.revolut.currencies.repository.CurrenciesRepository
-import io.reactivex.Single
 import io.reactivex.rxkotlin.combineLatest
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class CurrenciesViewModel @Inject constructor(
@@ -35,7 +32,6 @@ class CurrenciesViewModel @Inject constructor(
             .map { (currency, currencyNames) ->
                 currency.copy(name = currencyNames[currency.symbol].orEmpty())
             }
-//            .map { CurrencyItemViewModel(it, this) }
             .toMap { it.symbol }
             .subscribeBy(
                 onSuccess = { _currencies.value = it },

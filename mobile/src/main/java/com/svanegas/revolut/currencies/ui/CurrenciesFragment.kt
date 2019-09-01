@@ -10,7 +10,7 @@ import com.svanegas.revolut.currencies.base.arch.BaseView
 import com.svanegas.revolut.currencies.databinding.FragmentCurrenciesBinding
 import timber.log.Timber
 
-interface CurrenciesView : BaseView, CurrencyItemView
+interface CurrenciesView : BaseView
 
 class CurrenciesFragment : BaseFragmentViewModel<CurrenciesViewModel, FragmentCurrenciesBinding>(),
     CurrenciesView, CurrencyInteractionCallback {
@@ -19,7 +19,6 @@ class CurrenciesFragment : BaseFragmentViewModel<CurrenciesViewModel, FragmentCu
         fun newInstance() = CurrenciesFragment()
     }
 
-    //    private lateinit var currenciesAdapter: CurrenciesAdapter
     private lateinit var newCurrenciesAdapter: NewCurrenciesAdapter
 
     override fun setupViewModel() = findViewModel<CurrenciesViewModel>()
@@ -29,13 +28,11 @@ class CurrenciesFragment : BaseFragmentViewModel<CurrenciesViewModel, FragmentCu
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        currenciesAdapter = CurrenciesAdapter(this, viewModel)
         newCurrenciesAdapter = NewCurrenciesAdapter(this)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        binding.currenciesRecycler.adapter = currenciesAdapter
         binding.currenciesRecycler.adapter = newCurrenciesAdapter
         binding.currenciesRecycler.layoutManager = LinearLayoutManager(requireContext())
     }
@@ -47,15 +44,10 @@ class CurrenciesFragment : BaseFragmentViewModel<CurrenciesViewModel, FragmentCu
             Timber.d("CACA - Venga")
             val sortedCurrencies = viewModel.sortCurrenciesByDate(it.values.toList())
             newCurrenciesAdapter.setCurrencyList(sortedCurrencies)
-//            newCurrenciesAdapter.submitList(sortedCurrencies)
         })
     }
 
     override fun getOnFocusChangeListener() = View.OnFocusChangeListener { view, isFocused ->
         if (isFocused) Timber.d("CACA - isFocused: $isFocused | tag: ${view.tag}")
-    }
-
-    override fun onCurrencyClick(currency: CurrencyItemViewModel) {
-//        viewModel.updateCurrencyBaseAtDate(currency)
     }
 }
