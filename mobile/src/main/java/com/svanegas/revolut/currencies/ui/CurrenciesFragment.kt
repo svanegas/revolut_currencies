@@ -8,17 +8,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.svanegas.revolut.currencies.base.arch.BaseFragmentViewModel
 import com.svanegas.revolut.currencies.base.arch.BaseView
 import com.svanegas.revolut.currencies.databinding.FragmentCurrenciesBinding
+import timber.log.Timber
 
-interface CurrenciesView : BaseView, CurrencyItemView
+interface CurrenciesView : BaseView
 
 class CurrenciesFragment : BaseFragmentViewModel<CurrenciesViewModel, FragmentCurrenciesBinding>(),
-    CurrenciesView {
+    CurrenciesView, CurrencyInteractionCallback {
 
     companion object {
         fun newInstance() = CurrenciesFragment()
     }
 
     private lateinit var currenciesAdapter: CurrenciesAdapter
+    private var lastFocusedSymbol = ""
 
     override fun setupViewModel() = findViewModel<CurrenciesViewModel>()
 
@@ -27,7 +29,7 @@ class CurrenciesFragment : BaseFragmentViewModel<CurrenciesViewModel, FragmentCu
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        currenciesAdapter = CurrenciesAdapter(this, viewModel)
+        currenciesAdapter = CurrenciesAdapter(this)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -39,12 +41,27 @@ class CurrenciesFragment : BaseFragmentViewModel<CurrenciesViewModel, FragmentCu
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel.currencies.observe(viewLifecycleOwner, Observer {
-            val sortedCurrencies = viewModel.sortCurrenciesByDate(it.values.toList())
-            currenciesAdapter.submitList(sortedCurrencies)
+            // TODO: Is doubled maybe because initially is emptyList
+            Timber.d("CACA - Venga")
+            val currencies = viewModel.prepareCurrenciesToPopulate(it.values.toList())
+            currenciesAdapter.setCurrencyList(currencies)
+            // DiffUtil is not working as expected, this is very sad.
+            currenciesAdapter.notifyDataSetChanged()
         })
     }
 
-    override fun onCurrencyClick(currency: CurrencyItemViewModel) {
-        viewModel.updateCurrencyBaseAtDate(currency)
+    override fun getOnFocusChangeListener() = View.OnFocusChangeListener { view, isFocused ->
+        if (isFocused) {
+            val symbol = view.tag?.toString()
+            if (symbol != null && symbol != lastFocusedSymbol) {
+                Timber.d("CACA - Setting as base with $symbol")
+                lastFocusedSymbol = symbol
+                viewModel.setCurrencyAsBase(symbol)
+            }
+        }
+    }
+
+    override fun onTextChanged(symbol: String) {
+        viewModel.refreshValues(symbol)
     }
 }
