@@ -4,7 +4,6 @@ import com.google.gson.annotations.SerializedName
 import java.util.*
 
 typealias CurrencyMap = HashMap<String, Double>
-typealias CurrencyNames = HashMap<String, String>
 
 data class CurrencyResponse(
     @SerializedName("rates")
