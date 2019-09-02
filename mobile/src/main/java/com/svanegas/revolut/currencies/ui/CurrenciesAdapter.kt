@@ -7,11 +7,14 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.svanegas.revolut.currencies.R
+import com.svanegas.revolut.currencies.base.ui.CustomTextWatcher
 import com.svanegas.revolut.currencies.databinding.CurrencyItemBinding
 import com.svanegas.revolut.currencies.entity.Currency
 
+
 interface CurrencyInteractionCallback {
     fun getOnFocusChangeListener(): View.OnFocusChangeListener
+    fun onTextChanged(symbol: String)
 }
 
 class NewCurrenciesAdapter(
@@ -66,6 +69,7 @@ class NewCurrenciesAdapter(
         with(currencies[position]) {
             holder.binding.data = this
             holder.binding.convertInput.tag = this.symbol
+            holder.binding.convertInput.addTextChangedListener(getTextWatcher(this.symbol))
         }
         holder.binding.executePendingBindings()
     }
@@ -73,6 +77,13 @@ class NewCurrenciesAdapter(
     override fun getItemCount(): Int = currencies.size
 
     override fun getItemId(position: Int): Long = currencies[position].symbol.hashCode().toLong()
+
+    // This is very ugly, but I can't come up with a better solution </3
+    private fun getTextWatcher(symbol: String) = object : CustomTextWatcher() {
+        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+            interactionCallback.onTextChanged(symbol)
+        }
+    }
 
     class CurrencyViewHolder(val binding: CurrencyItemBinding) :
         RecyclerView.ViewHolder(binding.root)

@@ -2,35 +2,54 @@ package com.svanegas.revolut.currencies.ui
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.jakewharton.rxrelay2.BehaviorRelay
 import com.svanegas.revolut.currencies.base.arch.BaseViewModel
 import com.svanegas.revolut.currencies.base.utility.notifyChange
 import com.svanegas.revolut.currencies.entity.Currency
 import com.svanegas.revolut.currencies.repository.CurrenciesRepository
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.combineLatest
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import timber.log.Timber
 import java.text.NumberFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+
+private const val TEXT_CHANGE_DEBOUNCE_DELAY = 200L
 
 class CurrenciesViewModel @Inject constructor(
     private val currenciesRepository: CurrenciesRepository
 ) : BaseViewModel() {
 
     // TODO: Move to LiveData
-    private val selectedCurrency = "EUR"
+    private var selectedCurrency = "EUR"
 
     private val _currencies = MutableLiveData<MutableMap<String, Currency>>(mutableMapOf())
     val currencies: LiveData<MutableMap<String, Currency>> = _currencies
 
+    private val textChangeRelay = BehaviorRelay.create<String>()
+
     init {
         fetchData()
+        initTextChangeRelay()
     }
 
-    fun setCurrencyAsBase(tag: String) {
-        val oldCurrency = currencies.value?.get(tag) ?: return
+    private fun initTextChangeRelay() {
+        compositeDisposable += textChangeRelay
+            .debounce(TEXT_CHANGE_DEBOUNCE_DELAY, TimeUnit.MILLISECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .filter { it == selectedCurrency }
+            .subscribe {
+                Timber.d("CACA - Sym: $it")
+            }
+    }
+
+    fun setCurrencyAsBase(symbol: String) {
+        val oldCurrency = currencies.value?.get(symbol) ?: return
         val updatedCurrency = oldCurrency.copy(baseAt = Date())
+        selectedCurrency = symbol
         _currencies.value?.put(oldCurrency.symbol, updatedCurrency)
         _currencies.notifyChange()
     }
@@ -39,6 +58,8 @@ class CurrenciesViewModel @Inject constructor(
         .sortedByDate()
         .convertRates()
         .toList()
+
+    fun refreshValues(symbol: String) = textChangeRelay.accept(symbol)
 
     private fun fetchData() {
         compositeDisposable += currenciesRepository
