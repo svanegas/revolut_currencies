@@ -22,6 +22,7 @@ buildscript {
                 'alfonz'                   : '0.9.0',
                 'dagger'                   : '2.24',
                 'google_services'          : '4.3.1',
+                'realm'                    : '5.13.0',
 
                 'crashlytics'              : '2.10.1',
                 'fabric'                   : '1.31.0',
@@ -48,6 +49,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
         classpath "com.google.gms:google-services:${versions.google_services}"
         classpath "io.fabric.tools:gradle:${versions.fabric}"
+        classpath "io.realm:realm-gradle-plugin:${versions.realm}"
     }
 }
 
