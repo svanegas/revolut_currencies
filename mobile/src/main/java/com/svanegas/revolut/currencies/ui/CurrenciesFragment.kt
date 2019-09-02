@@ -62,6 +62,6 @@ class CurrenciesFragment : BaseFragmentViewModel<CurrenciesViewModel, FragmentCu
     }
 
     override fun onTextChanged(symbol: String) {
-        viewModel.refreshValues(symbol)
+        viewModel.refreshAmounts(symbol)
     }
 }
