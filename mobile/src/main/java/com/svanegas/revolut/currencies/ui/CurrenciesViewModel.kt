@@ -26,6 +26,13 @@ class CurrenciesViewModel @Inject constructor(
     // TODO: Move to LiveData
     private var selectedCurrency = "EUR"
 
+    // TODO: This would be to extend with some "Add currency" feature.
+    private val allowedCurrencies = MutableLiveData(
+        setOf(
+            "EUR", "USD", "GBP", "CZK"
+        )
+    )
+
     private val _currencies = MutableLiveData<MutableMap<String, Currency>>(mutableMapOf())
     val currencies: LiveData<MutableMap<String, Currency>> = _currencies
 
@@ -81,6 +88,7 @@ class CurrenciesViewModel @Inject constructor(
         .flattenAsFlowable { it.rates.entries }
         .map { Currency(it.key, it.value) }
         .startWith(getDefaultCurrency())
+        .filter { allowedCurrencies.value?.contains(it.symbol) ?: false }
 
     private fun CurrenciesRepository.fetchNames() = this
         .fetchCurrencyNames()
@@ -112,14 +120,14 @@ class CurrenciesViewModel @Inject constructor(
 
     private fun convertValue(amount: String, ratio: Double): String {
         var result: Double
+        val numberFormat = NumberFormat.getInstance(Locale.getDefault())
         return try {
-            result = amount.toDouble()
+            result = numberFormat.parse(amount).toDouble()
             result *= ratio
 
-            NumberFormat
-                .getInstance(Locale.getDefault())
-                .format(result)
-        } catch (ex: NumberFormatException) {
+            numberFormat.format(result)
+        } catch (ex: Exception) {
+            Timber.e(ex)
             ""
         }
     }

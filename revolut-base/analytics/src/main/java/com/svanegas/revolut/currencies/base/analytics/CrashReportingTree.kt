@@ -5,6 +5,7 @@ import io.fabric.sdk.android.services.common.CommonUtils
 import timber.log.Timber
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
+import java.text.ParseException
 import java.util.*
 
 /**
@@ -49,7 +50,9 @@ class CrashReportingTree : Timber.DebugTree() {
     private val Throwable?.isIgnored
         get() = when (this) {
             is SocketTimeoutException,
-            is UnknownHostException -> true
+            is UnknownHostException,
+            is ParseException,
+            is NumberFormatException -> true
             else -> false
         }
 }
