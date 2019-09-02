@@ -23,8 +23,7 @@ class CurrenciesViewModel @Inject constructor(
     private val currenciesRepository: CurrenciesRepository
 ) : BaseViewModel() {
 
-    // TODO: Move to LiveData
-    private var selectedCurrency = "EUR"
+    private var selectedCurrency: Currency = getDefaultCurrency()
 
     // TODO: This would be to extend with some "Add currency" feature.
     private val allowedCurrencies = MutableLiveData(
@@ -47,7 +46,7 @@ class CurrenciesViewModel @Inject constructor(
         compositeDisposable += textChangeRelay
             .debounce(TEXT_CHANGE_DEBOUNCE_DELAY, TimeUnit.MILLISECONDS)
             .observeOn(AndroidSchedulers.mainThread())
-            .filter { it == selectedCurrency }
+            .filter { it == selectedCurrency.symbol }
             .subscribe {
                 Timber.d("CACA - Sym: $it")
                 _currencies.notifyChange()
@@ -57,9 +56,11 @@ class CurrenciesViewModel @Inject constructor(
     fun setCurrencyAsBase(symbol: String) {
         val oldCurrency = currencies.value?.get(symbol) ?: return
         val updatedCurrency = oldCurrency.copy(baseAt = Date())
-        selectedCurrency = symbol
+        selectedCurrency = updatedCurrency
         _currencies.value?.put(oldCurrency.symbol, updatedCurrency)
         _currencies.notifyChange()
+
+        fetchData()
     }
 
     fun prepareCurrenciesToPopulate(currencies: List<Currency>): List<Currency> = currencies
@@ -67,7 +68,7 @@ class CurrenciesViewModel @Inject constructor(
         .convertRates()
         .toList()
 
-    fun refreshValues(symbol: String) = textChangeRelay.accept(symbol)
+    fun refreshAmounts(symbol: String) = textChangeRelay.accept(symbol)
 
     private fun fetchData() {
         compositeDisposable += currenciesRepository
@@ -84,16 +85,21 @@ class CurrenciesViewModel @Inject constructor(
     }
 
     private fun CurrenciesRepository.fetchCurrencies() = this
-        .fetchCurrencies(selectedCurrency)
+        .fetchCurrencies(selectedCurrency.symbol)
         .flattenAsFlowable { it.rates.entries }
-        .map { Currency(it.key, it.value) }
-        .startWith(getDefaultCurrency())
+        .map {
+            // Not really good way how to keep the previous [baseAt] value
+            val existing = _currencies.value?.get(it.key) ?: Currency()
+            existing.copy(symbol = it.key, ratio = it.value)
+        }
+        .startWith(selectedCurrency)
         .filter { allowedCurrencies.value?.contains(it.symbol) ?: false }
 
     private fun CurrenciesRepository.fetchNames() = this
         .fetchCurrencyNames()
         .toFlowable()
 
+    // TODO: Define where to get this default currency from
     private fun getDefaultCurrency() = Currency(
         symbol = "EUR",
         baseAt = Date(),
