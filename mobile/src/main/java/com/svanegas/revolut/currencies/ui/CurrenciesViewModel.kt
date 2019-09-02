@@ -17,7 +17,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-private const val TEXT_CHANGE_DEBOUNCE_DELAY = 200L
+private const val TEXT_CHANGE_DEBOUNCE_DELAY = 100L
 
 class CurrenciesViewModel @Inject constructor(
     private val currenciesRepository: CurrenciesRepository
@@ -43,6 +43,7 @@ class CurrenciesViewModel @Inject constructor(
             .filter { it == selectedCurrency }
             .subscribe {
                 Timber.d("CACA - Sym: $it")
+                _currencies.notifyChange()
             }
     }
 

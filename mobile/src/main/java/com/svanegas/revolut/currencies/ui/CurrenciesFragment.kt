@@ -19,7 +19,7 @@ class CurrenciesFragment : BaseFragmentViewModel<CurrenciesViewModel, FragmentCu
         fun newInstance() = CurrenciesFragment()
     }
 
-    private lateinit var newCurrenciesAdapter: NewCurrenciesAdapter
+    private lateinit var currenciesAdapter: CurrenciesAdapter
     private var lastFocusedSymbol = ""
 
     override fun setupViewModel() = findViewModel<CurrenciesViewModel>()
@@ -29,12 +29,12 @@ class CurrenciesFragment : BaseFragmentViewModel<CurrenciesViewModel, FragmentCu
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        newCurrenciesAdapter = NewCurrenciesAdapter(this)
+        currenciesAdapter = CurrenciesAdapter(this)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.currenciesRecycler.adapter = newCurrenciesAdapter
+        binding.currenciesRecycler.adapter = currenciesAdapter
         binding.currenciesRecycler.layoutManager = LinearLayoutManager(requireContext())
     }
 
@@ -44,7 +44,9 @@ class CurrenciesFragment : BaseFragmentViewModel<CurrenciesViewModel, FragmentCu
             // TODO: Is doubled maybe because initially is emptyList
             Timber.d("CACA - Venga")
             val currencies = viewModel.prepareCurrenciesToPopulate(it.values.toList())
-            newCurrenciesAdapter.setCurrencyList(currencies)
+            currenciesAdapter.setCurrencyList(currencies)
+            // DiffUtil is not working as expected, this is very sad.
+            currenciesAdapter.notifyDataSetChanged()
         })
     }
 

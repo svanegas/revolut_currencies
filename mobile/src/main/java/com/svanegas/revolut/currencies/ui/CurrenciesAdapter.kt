@@ -17,11 +17,11 @@ interface CurrencyInteractionCallback {
     fun onTextChanged(symbol: String)
 }
 
-class NewCurrenciesAdapter(
+class CurrenciesAdapter(
     private val interactionCallback: CurrencyInteractionCallback
-) : RecyclerView.Adapter<NewCurrenciesAdapter.CurrencyViewHolder>() {
+) : RecyclerView.Adapter<CurrenciesAdapter.CurrencyViewHolder>() {
 
-    private var currencies: List<Currency> = emptyList()
+    private val currencies: MutableList<Currency> = mutableListOf()
 
     init {
         setHasStableIds(true)
@@ -34,22 +34,27 @@ class NewCurrenciesAdapter(
             override fun getNewListSize(): Int = currencyList.size
 
             override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
-                currencies[oldItemPosition].symbol == currencyList[newItemPosition].symbol
+                currencies[oldItemPosition].symbol === currencyList[newItemPosition].symbol
 
             override fun areContentsTheSame(
                 oldItemPosition: Int,
                 newItemPosition: Int
             ): Boolean {
-                val oldCurrency = currencies[newItemPosition]
+                val oldCurrency = currencies[oldItemPosition]
                 val newCurrency = currencyList[newItemPosition]
                 return when {
                     newCurrency.symbol != oldCurrency.symbol -> false
                     newCurrency.ratio != oldCurrency.ratio -> false
+                    newCurrency.name != oldCurrency.name -> false
+                    newCurrency.amount != oldCurrency.amount -> false
                     else -> true
                 }
             }
         })
-        currencies = currencyList
+        currencies.apply {
+            clear()
+            addAll(currencyList)
+        }
         result.dispatchUpdatesTo(this)
     }
 
