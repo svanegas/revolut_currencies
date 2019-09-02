@@ -8,7 +8,6 @@ import com.svanegas.revolut.currencies.base.utility.notifyChange
 import com.svanegas.revolut.currencies.entity.Currency
 import com.svanegas.revolut.currencies.repository.CurrenciesRepository
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.rxkotlin.combineLatest
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import timber.log.Timber
@@ -73,10 +72,6 @@ class CurrenciesViewModel @Inject constructor(
     private fun fetchData() {
         compositeDisposable += currenciesRepository
             .fetchCurrencies()
-            .combineLatest(currenciesRepository.fetchNames())
-            .map { (currency, currencyNames) ->
-                currency.copy(name = currencyNames[currency.symbol].orEmpty())
-            }
             .toMap { it.symbol }
             .subscribeBy(
                 onSuccess = { _currencies.value = it },
@@ -87,17 +82,14 @@ class CurrenciesViewModel @Inject constructor(
     private fun CurrenciesRepository.fetchCurrencies() = this
         .fetchCurrencies(selectedCurrency.symbol)
         .flattenAsFlowable { it.rates.entries }
+        .filter { allowedCurrencies.value?.contains(it.key) ?: false }
         .map {
             // Not really good way how to keep the previous [baseAt] value
             val existing = _currencies.value?.get(it.key) ?: Currency()
             existing.copy(symbol = it.key, ratio = it.value)
         }
         .startWith(selectedCurrency)
-        .filter { allowedCurrencies.value?.contains(it.symbol) ?: false }
-
-    private fun CurrenciesRepository.fetchNames() = this
-        .fetchCurrencyNames()
-        .toFlowable()
+        .map { it.copy(name = currenciesRepository.fetchCurrencyName(it.symbol)) }
 
     // TODO: Define where to get this default currency from
     private fun getDefaultCurrency() = Currency(
