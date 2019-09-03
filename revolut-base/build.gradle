@@ -60,6 +60,10 @@ dependencies {
     // Alfonz
     api "org.alfonz:alfonz-adapter:${versions.alfonz}"
 
+    // Glide
+    api "com.github.bumptech.glide:glide:${versions.glide}"
+    kapt "com.github.bumptech.glide:compiler:${versions.glide}"
+
     // Dagger
     api "com.google.dagger:dagger:${versions.dagger}"
     api "com.google.dagger:dagger-android:${versions.dagger}"

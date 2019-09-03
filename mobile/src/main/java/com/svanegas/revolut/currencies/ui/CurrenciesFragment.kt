@@ -11,7 +11,6 @@ import com.svanegas.revolut.currencies.R
 import com.svanegas.revolut.currencies.base.arch.BaseFragmentViewModel
 import com.svanegas.revolut.currencies.base.arch.BaseView
 import com.svanegas.revolut.currencies.databinding.FragmentCurrenciesBinding
-import timber.log.Timber
 
 interface CurrenciesView : BaseView
 
