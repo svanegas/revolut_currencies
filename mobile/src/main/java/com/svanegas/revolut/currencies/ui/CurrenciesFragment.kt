@@ -52,7 +52,6 @@ class CurrenciesFragment : BaseFragmentViewModel<CurrenciesViewModel, FragmentCu
         super.onActivityCreated(savedInstanceState)
         viewModel.currencies.observe(viewLifecycleOwner, Observer {
             // TODO: Is doubled maybe because initially is emptyList
-            Timber.d("CACA - Venga")
             val currencies = viewModel.prepareCurrenciesToPopulate(it.values.toList())
             currenciesAdapter.setCurrencyList(currencies)
             // DiffUtil is not working as expected, this is very sad.
@@ -64,7 +63,6 @@ class CurrenciesFragment : BaseFragmentViewModel<CurrenciesViewModel, FragmentCu
         if (isFocused) {
             val symbol = view.tag?.toString()
             if (symbol != null && symbol != lastFocusedSymbol) {
-                Timber.d("CACA - Setting as base with $symbol")
                 lastFocusedSymbol = symbol
                 viewModel.setCurrencyAsBase(symbol)
             }

@@ -54,10 +54,7 @@ class CurrenciesViewModel @Inject constructor(
             .debounce(TEXT_CHANGE_DEBOUNCE_DELAY_MILLIS, TimeUnit.MILLISECONDS)
             .observeOn(AndroidSchedulers.mainThread())
             .filter { it == selectedCurrency.symbol }
-            .subscribe {
-                Timber.d("CACA - Sym: $it")
-                _currencies.notifyChange()
-            }
+            .subscribe { _currencies.notifyChange() }
     }
 
     fun setCurrencyAsBase(symbol: String) {
