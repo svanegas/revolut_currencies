@@ -45,6 +45,12 @@ android {
             crunchPngs true
             zipAlignEnabled true
             minifyEnabled true
+
+            proguardFile "$project_directory/proguard-rules/proguard-square-retrofit2.pro"
+            proguardFile "$project_directory/proguard-rules/proguard-square-okio.pro"
+            proguardFile "$project_directory/proguard-rules/proguard-glide.pro"
+            proguardFile "$project_directory/proguard-rules/proguard-gson.pro"
+            proguardFile "$project_directory/proguard-rules/proguard-square-okhttp3.pro"
             proguardFiles getDefaultProguardFile('proguard-android.txt'), "$project_directory/mobile/proguard-rules.pro"
         }
     }
