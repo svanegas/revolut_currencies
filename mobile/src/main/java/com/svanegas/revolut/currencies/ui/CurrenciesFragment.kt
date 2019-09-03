@@ -50,9 +50,7 @@ class CurrenciesFragment : BaseFragmentViewModel<CurrenciesViewModel, FragmentCu
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel.currencies.observe(viewLifecycleOwner, Observer {
-            // TODO: Is doubled maybe because initially is emptyList
-            val currencies = viewModel.prepareCurrenciesToPopulate(it.values.toList())
-            currenciesAdapter.setCurrencyList(currencies)
+            currenciesAdapter.setCurrencyList(it)
             // DiffUtil is not working as expected, this is very sad.
             currenciesAdapter.notifyDataSetChanged()
         })
