@@ -19,6 +19,7 @@ import javax.inject.Inject
 
 private const val TEXT_CHANGE_DEBOUNCE_DELAY_MILLIS = 100L
 private const val DATA_POLL_DELAY_MILLIS = 1500L
+private const val DEFAULT_BASE_CURRENCY_SYMBOL = "EUR"
 
 class CurrenciesViewModel @Inject constructor(
     private val currenciesRepository: CurrenciesRepository
@@ -29,7 +30,7 @@ class CurrenciesViewModel @Inject constructor(
     // TODO: This would be to extend with some "Add currency" feature.
     private val allowedCurrencies = MutableLiveData(
         setOf(
-            "EUR", "USD", "GBP", "CZK"
+            DEFAULT_BASE_CURRENCY_SYMBOL, "USD", "GBP", "CZK"
         )
     )
 
@@ -54,10 +55,7 @@ class CurrenciesViewModel @Inject constructor(
             .debounce(TEXT_CHANGE_DEBOUNCE_DELAY_MILLIS, TimeUnit.MILLISECONDS)
             .observeOn(AndroidSchedulers.mainThread())
             .filter { it == selectedCurrency.symbol }
-            .subscribe {
-                Timber.d("CACA - Sym: $it")
-                _currencies.notifyChange()
-            }
+            .subscribe { _currencies.notifyChange() }
     }
 
     fun setCurrencyAsBase(symbol: String) {
@@ -103,8 +101,9 @@ class CurrenciesViewModel @Inject constructor(
 
     // TODO: Define where to get this default currency from
     private fun getDefaultCurrency() = Currency(
-        symbol = "EUR",
+        symbol = DEFAULT_BASE_CURRENCY_SYMBOL,
         baseAt = Date(),
+        name = currenciesRepository.fetchCurrencyName(DEFAULT_BASE_CURRENCY_SYMBOL),
         amount = "10"
     )
 

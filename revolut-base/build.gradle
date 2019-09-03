@@ -37,6 +37,8 @@ dependencies {
     api "androidx.databinding:databinding-runtime:${versions.android_gradle}"
     api "androidx.databinding:databinding-adapters:${versions.android_gradle}"
 
+    api "com.google.android.material:material:${versions.material_design}"
+
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${versions.kotlin}"
 
     // Retrofit + OkHttp + Gson
@@ -57,6 +59,10 @@ dependencies {
 
     // Alfonz
     api "org.alfonz:alfonz-adapter:${versions.alfonz}"
+
+    // Glide
+    api "com.github.bumptech.glide:glide:${versions.glide}"
+    kapt "com.github.bumptech.glide:compiler:${versions.glide}"
 
     // Dagger
     api "com.google.dagger:dagger:${versions.dagger}"
