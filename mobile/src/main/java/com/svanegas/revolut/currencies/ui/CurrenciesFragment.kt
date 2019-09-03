@@ -22,7 +22,6 @@ class CurrenciesFragment : BaseFragmentViewModel<CurrenciesViewModel, FragmentCu
     }
 
     private lateinit var currenciesAdapter: CurrenciesAdapter
-    private var lastFocusedSymbol = ""
 
     override fun setupViewModel() = findViewModel<CurrenciesViewModel>()
 
@@ -59,14 +58,17 @@ class CurrenciesFragment : BaseFragmentViewModel<CurrenciesViewModel, FragmentCu
     override fun getOnFocusChangeListener() = View.OnFocusChangeListener { view, isFocused ->
         if (isFocused) {
             val symbol = view.tag?.toString()
-            if (symbol != null && symbol != lastFocusedSymbol) {
-                lastFocusedSymbol = symbol
-                viewModel.setCurrencyAsBase(symbol)
+            if (symbol != null) {
+//                viewModel.setCurrencyAsBase(symbol)
             }
         }
     }
 
     override fun onTextChanged(symbol: String) {
         viewModel.refreshAmounts(symbol)
+    }
+
+    override fun onCurrencyClick(symbol: String, view: View) {
+        viewModel.setCurrencyAsBase(symbol)
     }
 }

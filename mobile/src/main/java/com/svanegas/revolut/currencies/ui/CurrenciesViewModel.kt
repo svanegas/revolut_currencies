@@ -59,8 +59,11 @@ class CurrenciesViewModel @Inject constructor(
     }
 
     fun setCurrencyAsBase(symbol: String) {
+        if (selectedCurrency.symbol == symbol) return
+
         val oldCurrency = currenciesMap.value?.get(symbol) ?: return
         val updatedCurrency = oldCurrency.copy(baseAt = Date())
+
         selectedCurrency = updatedCurrency
         currenciesMap.value?.put(oldCurrency.symbol, updatedCurrency)
         compositeDisposable += notifyCurrenciesUpdated().subscribe()
@@ -76,6 +79,7 @@ class CurrenciesViewModel @Inject constructor(
             .map { it.values.toList() }
             .map { it.sortedByDate() }
             .map { it.convertRates() }
+            .map { it.assignFocusability() }
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSuccess { this.currencies.value = it }
     }
@@ -100,7 +104,7 @@ class CurrenciesViewModel @Inject constructor(
         .fetchCurrencies(selectedCurrency.symbol)
         .observeOn(Schedulers.computation())
         .flattenAsFlowable { it.rates.entries }
-        .filter { allowedCurrencies.value?.contains(it.key) ?: false }
+//        .filter { allowedCurrencies.value?.contains(it.key) ?: false }
         .map {
             // Not really good way how to keep the previous [baseAt] value
             val existing = currenciesMap.value?.get(it.key) ?: Currency()
@@ -146,6 +150,11 @@ class CurrenciesViewModel @Inject constructor(
             Timber.e(ex)
             ""
         }
+    }
+
+    private fun List<Currency>.assignFocusability(): List<Currency> {
+        this.forEachIndexed { index, currency -> currency.enabled = index == 0 }
+        return this
     }
 }
 

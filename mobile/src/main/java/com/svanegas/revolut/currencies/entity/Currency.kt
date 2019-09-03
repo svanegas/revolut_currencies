@@ -15,5 +15,6 @@ data class Currency(
     var ratio: Double = 1.0,
     val name: String = "",
     val baseAt: Date? = null,
-    var amount: String = ""
+    var amount: String = "",
+    var enabled: Boolean = false
 )

@@ -3,6 +3,7 @@ package com.svanegas.revolut.currencies.base.utility
 import android.view.View
 import android.widget.EditText
 import androidx.databinding.BindingAdapter
+import androidx.databinding.BindingConversion
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
 
@@ -27,4 +28,12 @@ fun setRecyclerAnimator(recyclerView: RecyclerView, recyclerAnimator: RecyclerAn
 @BindingAdapter("app:onFocusChange")
 fun setOnFocusChange(text: EditText, listener: View.OnFocusChangeListener) {
     text.onFocusChangeListener = listener
+}
+
+/**
+ * Conversion for Visibility - we can pass boolean as parameter in visible property
+ */
+@BindingConversion
+fun convertBooleanToVisibility(visible: Boolean): Int {
+    return if (visible) View.VISIBLE else View.GONE
 }

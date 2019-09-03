@@ -16,8 +16,11 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/currency_item_height">
-        <!-- TODO: enable full row listener android:onClick="@{() -> view.onCurrencyClick(data)}"-->
+        android:layout_height="@dimen/currency_item_height"
+        android:nextFocusRight="@id/convert_input"
+        android:nextFocusDown="@id/convert_input"
+        android:nextFocusForward="@id/convert_input"
+        android:onClick="@{(view) -> callback.onCurrencyClick(data.symbol, view)}">
 
         <ImageView
             android:id="@+id/flag"
@@ -66,10 +69,19 @@
             app:layout_constraintTop_toBottomOf="@id/symbol"
             tools:text="US Dollar" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{`` + data.enabled}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <EditText
             android:id="@+id/convert_input"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:enabled="@{data.enabled}"
             android:fontFamily="sans-serif"
             android:hint="@string/convert_input_hint"
             android:inputType="numberDecimal"
@@ -82,8 +94,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/keyline_end"
             app:layout_constraintStart_toEndOf="@id/symbol"
-            app:layout_constraintTop_toTopOf="parent"
-            app:onFocusChange="@{callback.onFocusChangeListener}" />
+            app:layout_constraintTop_toTopOf="parent" />
+        <!--        app:onFocusChange="@{callback.onFocusChangeListener}"-->
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/keyline_start"
