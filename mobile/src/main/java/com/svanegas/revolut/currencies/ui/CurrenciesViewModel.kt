@@ -8,6 +8,7 @@ import com.svanegas.revolut.currencies.base.utility.notifyChange
 import com.svanegas.revolut.currencies.entity.Currency
 import com.svanegas.revolut.currencies.repository.CurrenciesRepository
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import timber.log.Timber
@@ -16,7 +17,8 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-private const val TEXT_CHANGE_DEBOUNCE_DELAY = 100L
+private const val TEXT_CHANGE_DEBOUNCE_DELAY_MILLIS = 100L
+private const val DATA_POLL_DELAY_MILLIS = 1500L
 
 class CurrenciesViewModel @Inject constructor(
     private val currenciesRepository: CurrenciesRepository
@@ -35,15 +37,21 @@ class CurrenciesViewModel @Inject constructor(
     val currencies: LiveData<MutableMap<String, Currency>> = _currencies
 
     private val textChangeRelay = BehaviorRelay.create<String>()
+    private var textChangeRelayDisposable: Disposable? = null
 
     init {
         fetchData()
         initTextChangeRelay()
     }
 
+    override fun onCleared() {
+        textChangeRelayDisposable?.dispose()
+        super.onCleared()
+    }
+
     private fun initTextChangeRelay() {
-        compositeDisposable += textChangeRelay
-            .debounce(TEXT_CHANGE_DEBOUNCE_DELAY, TimeUnit.MILLISECONDS)
+        textChangeRelayDisposable = textChangeRelay
+            .debounce(TEXT_CHANGE_DEBOUNCE_DELAY_MILLIS, TimeUnit.MILLISECONDS)
             .observeOn(AndroidSchedulers.mainThread())
             .filter { it == selectedCurrency.symbol }
             .subscribe {
@@ -70,11 +78,14 @@ class CurrenciesViewModel @Inject constructor(
     fun refreshAmounts(symbol: String) = textChangeRelay.accept(symbol)
 
     private fun fetchData() {
+        compositeDisposable.clear()
         compositeDisposable += currenciesRepository
             .fetchCurrencies()
+            .startWith(selectedCurrency)
             .toMap { it.symbol }
+            .repeatWhen { it.delay(DATA_POLL_DELAY_MILLIS, TimeUnit.MILLISECONDS) }
             .subscribeBy(
-                onSuccess = { _currencies.value = it },
+                onNext = { _currencies.value = it },
                 onError = { Timber.e(it) }
             )
     }
@@ -88,7 +99,6 @@ class CurrenciesViewModel @Inject constructor(
             val existing = _currencies.value?.get(it.key) ?: Currency()
             existing.copy(symbol = it.key, ratio = it.value)
         }
-        .startWith(selectedCurrency)
         .map { it.copy(name = currenciesRepository.fetchCurrencyName(it.symbol)) }
 
     // TODO: Define where to get this default currency from
