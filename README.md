@@ -71,12 +71,12 @@ There are two flavors and two build types, making a total of 4 build variants.
 
 In order to build `release` builds you would need to generate a key store to sign the app.
 Once you have your key store save it as `currencies.jks` under the `extras/keystore` folder, and also,
-create a file `currencies.properties` to save the key store settings, as follows:
+create a file `currencies.properties` to save your store settings, as follows:
 
 ```
-keystore.key.password=123abc
-keystore.store.password=456def
-keystore.key.alias=alias1
+keystore.key.password=123example
+keystore.store.password=456example
+keystore.key.alias=example1
 ```
 
 ## Known issues
