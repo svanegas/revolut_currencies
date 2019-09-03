@@ -14,8 +14,8 @@
   * [How it looks like](#how-it-looks-like)
   * [Dependencies](#dependencies)
   * [Setup](#setup)
-  * [How to launch Currencies](#how-to-launch-currencies)
   * [Known issues](#known-issues)
+  * [What's next?](#whats-next)
 
 ## Functionality
 
