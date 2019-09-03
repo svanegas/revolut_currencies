@@ -1,11 +1,25 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light">
-        <!-- Customize your theme here. -->
+    <style name="BaseTheme.Currencies.Light" parent="@style/Theme.MaterialComponents.Light">
+        <item name="windowActionBar">false</item>
+        <item name="windowActionModeOverlay">true</item>
+        <item name="windowNoTitle">true</item>
+
+        <item name="android:statusBarColor">@android:color/background_light</item>
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="android:toolbarStyle">@style/Widget.Currencies.Toolbar</item>
+        <item name="toolbarStyle">@style/Widget.Currencies.Toolbar</item>
     </style>
+
+    <style name="Theme.Currencies.Light" parent="BaseTheme.Currencies.Light" />
+
+    <style name="Theme.Currencies.Light.SystemNavBarNoDivider" parent="BaseTheme.Currencies.Light" />
 
 </resources>

@@ -1,3 +1,4 @@
 <resources>
+    <string name="currencies_list_title">Rates</string>
     <string name="convert_input_hint">0</string>
 </resources>

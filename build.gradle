@@ -22,6 +22,7 @@ buildscript {
                 'alfonz'                   : '0.9.0',
                 'dagger'                   : '2.24',
                 'google_services'          : '4.3.1',
+                'material_design'          : '1.0.0',
 
                 'crashlytics'              : '2.10.1',
                 'fabric'                   : '1.31.0',
