@@ -1,5 +1,6 @@
 package com.svanegas.revolut.currencies.repository
 
+import com.svanegas.revolut.currencies.base.OpenForMocking
 import com.svanegas.revolut.currencies.base.utility.applySchedulers
 import com.svanegas.revolut.currencies.entity.CurrencyResponse
 import com.svanegas.revolut.currencies.rest.CurrencyRouter
@@ -9,6 +10,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
+@OpenForMocking
 class CurrenciesRepository @Inject constructor(
     private val currencyRouter: CurrencyRouter
 ) {

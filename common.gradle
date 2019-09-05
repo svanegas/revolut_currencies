@@ -2,6 +2,22 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 
+ext {
+    // current task name (used in [mobile] and [common] gradle
+    taskName = getGradle().getStartParameter().getTaskRequests().toString().toLowerCase()
+}
+
+// when running from console, you use ./gradlew test*
+// when running from AS, task task with compile*UnitTestSources will be run before
+if (taskName.contains("test") || taskName.contains("testsources")) {
+    println "Applying allopen"
+
+    apply plugin: 'kotlin-allopen'
+    allOpen {
+        annotation('com.svanegas.revolut.currencies.base.OpenForMocking')
+    }
+}
+
 kapt {
     useBuildCache = true
 }
@@ -34,6 +50,9 @@ android {
         production {
             java.srcDirs += 'src/server/java'
         }
+        test {
+            java.srcDirs += testutils_files
+        }
     }
 
     buildTypes {
@@ -60,4 +79,9 @@ dependencies {
     // Dagger
     kapt "com.google.dagger:dagger-compiler:${versions.dagger}"
     kapt "com.google.dagger:dagger-android-processor:${versions.dagger}"
+
+    // Unit tests
+    testImplementation "org.junit.jupiter:junit-jupiter:${versions.junit5}"
+    testImplementation "org.mockito:mockito-core:${versions.mockito}"
+    testImplementation "android.arch.core:core-testing:${versions.core_testing}"
 }
