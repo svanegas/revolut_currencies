@@ -2,8 +2,10 @@ package com.svanegas.revolut.currencies.ui
 
 import androidx.lifecycle.MutableLiveData
 import com.jakewharton.rxrelay2.BehaviorRelay
+import com.svanegas.revolut.currencies.base.OpenForMocking
 import com.svanegas.revolut.currencies.base.arch.BaseViewModel
 import com.svanegas.revolut.currencies.entity.Currency
+import com.svanegas.revolut.currencies.polling.PollingStrategy
 import com.svanegas.revolut.currencies.repository.CurrenciesRepository
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -18,26 +20,27 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 private const val TEXT_CHANGE_DEBOUNCE_DELAY_MILLIS = 100L
-private const val DATA_POLL_DELAY_MILLIS = 1500L
 private const val DEFAULT_BASE_CURRENCY_SYMBOL = "EUR"
 
+@OpenForMocking
 class CurrenciesViewModel @Inject constructor(
-    private val currenciesRepository: CurrenciesRepository
+    private val currenciesRepository: CurrenciesRepository,
+    private val pollingStrategy: PollingStrategy
 ) : BaseViewModel() {
 
-    private var selectedCurrency: Currency = getDefaultCurrency()
+    internal var selectedCurrency: Currency = getDefaultCurrency()
 
     // TODO: This would be to extend with some "Add currency" feature.
-    private val allowedCurrencies = MutableLiveData(
+    internal val allowedCurrencies = MutableLiveData(
         setOf(
             DEFAULT_BASE_CURRENCY_SYMBOL, "USD", "GBP", "CZK"
         )
     )
 
-    private val currenciesMap = MutableLiveData<MutableMap<String, Currency>>(mutableMapOf())
+    internal val currenciesMap = MutableLiveData<MutableMap<String, Currency>>(mutableMapOf())
     val currencies = MutableLiveData<List<Currency>>()
 
-    private val textChangeRelay = BehaviorRelay.create<String>()
+    internal val textChangeRelay = BehaviorRelay.create<String>()
     private var textChangeRelayDisposable: Disposable? = null
 
     init {
@@ -50,7 +53,7 @@ class CurrenciesViewModel @Inject constructor(
         super.onCleared()
     }
 
-    private fun initTextChangeRelay() {
+    internal fun initTextChangeRelay() {
         textChangeRelayDisposable = textChangeRelay
             .debounce(TEXT_CHANGE_DEBOUNCE_DELAY_MILLIS, TimeUnit.MILLISECONDS)
             .filter { it == selectedCurrency.symbol }
@@ -68,27 +71,30 @@ class CurrenciesViewModel @Inject constructor(
         fetchData()
     }
 
-    private fun notifyCurrenciesUpdated(currencies: MutableMap<String, Currency>? = null): Single<List<Currency>> {
+    internal fun notifyCurrenciesUpdated(currencies: MutableMap<String, Currency>? = null): Single<List<Currency>> {
         if (currencies != null) currenciesMap.value = currencies
 
         return Single.fromCallable { currenciesMap.value }
             .subscribeOn(Schedulers.computation())
-            .map { it.values.toList() }
-            .map { it.sortedByDate() }
-            .map { it.convertRates() }
+            .map { getListOfCurrenciesFromMap(it) }
+            .map { sortedByDate(it) }
+            .map { convertRates(it) }
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSuccess { this.currencies.value = it }
     }
 
+    internal fun getListOfCurrenciesFromMap(map: MutableMap<String, Currency>) = map
+        .values
+        .toList()
+
     fun refreshAmounts(symbol: String) = textChangeRelay.accept(symbol)
 
-    private fun fetchData() {
+    fun fetchData() {
         compositeDisposable.clear()
-        compositeDisposable += currenciesRepository
-            .fetchCurrencies()
+        compositeDisposable += fetchCurrencies()
             .startWith(selectedCurrency)
             .toMap { it.symbol }
-            .repeatWhen { it.delay(DATA_POLL_DELAY_MILLIS, TimeUnit.MILLISECONDS) }
+            .repeatWhen { pollingStrategy.getPollingMethod(it) }
             .observeOn(AndroidSchedulers.mainThread())
             .flatMap { notifyCurrenciesUpdated(it).toFlowable() }
             .subscribeBy(
@@ -96,17 +102,23 @@ class CurrenciesViewModel @Inject constructor(
             )
     }
 
-    private fun CurrenciesRepository.fetchCurrencies() = this
+    internal fun fetchCurrencies() = currenciesRepository
         .fetchCurrencies(selectedCurrency.symbol)
         .observeOn(Schedulers.computation())
         .flattenAsFlowable { it.rates.entries }
-        .filter { allowedCurrencies.value?.contains(it.key) ?: false }
-        .map {
-            // Not really good way how to keep the previous [baseAt] value
-            val existing = currenciesMap.value?.get(it.key) ?: Currency()
-            existing.copy(symbol = it.key, ratio = it.value)
-        }
+        .filter { isCurrencyAllowed(it.key) }
+        .map { getCurrencyWithExistingBaseAt(it) }
         .map { it.copy(name = currenciesRepository.fetchCurrencyName(it.symbol)) }
+
+    internal fun getCurrencyWithExistingBaseAt(currencyEntry: MutableMap.MutableEntry<String, Double>): Currency {
+        // Not really good way how to keep the previous [baseAt] value
+        val existing = currenciesMap.value?.get(currencyEntry.key) ?: Currency()
+        return existing.copy(symbol = currencyEntry.key, ratio = currencyEntry.value)
+    }
+
+    internal fun isCurrencyAllowed(symbol: String) = allowedCurrencies.value
+        ?.contains(symbol)
+        ?: false
 
     // TODO: Define where to get this default currency from
     private fun getDefaultCurrency() = Currency(
@@ -116,14 +128,14 @@ class CurrenciesViewModel @Inject constructor(
         amount = "10"
     )
 
-    private fun List<Currency>.sortedByDate() = this
+    internal fun sortedByDate(currencies: List<Currency>) = currencies
         .sortedByDescending { it.baseAt }
 
 
-    private fun List<Currency>.convertRates(): List<Currency> {
-        val source = this.firstOrNull() ?: return this
+    internal fun convertRates(currencies: List<Currency>): List<Currency> {
+        val source = currencies.firstOrNull() ?: return currencies
 
-        return this
+        return currencies
             .mapIndexed { index, item ->
                 if (index == 0) item
                 else {
@@ -134,7 +146,7 @@ class CurrenciesViewModel @Inject constructor(
             .toList()
     }
 
-    private fun convertValue(amount: String, ratio: Double): String {
+    internal fun convertValue(amount: String, ratio: Double): String {
         var result: Double
         val numberFormat = NumberFormat.getInstance(Locale.getDefault())
         return try {

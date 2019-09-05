@@ -14,6 +14,7 @@
   * [How it looks like](#how-it-looks-like)
   * [Dependencies](#dependencies)
   * [Setup](#setup)
+  * [Unit tests](#unit-tests)
   * [Known issues](#known-issues)
   * [What's next?](#whats-next)
 
@@ -80,6 +81,22 @@ keystore.store.password=456example
 keystore.key.alias=example1
 ```
 
+## Unit tests
+
+This project has a set of unit tests for the main view model, i.e. the `CurrenciesViewModel`,
+those tests can be run using gradlew as follows:
+
+```
+./gradlew test[flavor][build type]
+```
+
+for instance
+```
+./gradlew testProductionDebug
+```
+
+or don't specify any flavor or build type and it would do it for each variant.
+
 ## Known issues
 
 There are some issues that were identified during the development process but they haven't been solved yet:
@@ -95,7 +112,6 @@ There are some issues that were identified during the development process but th
 
 The project would need a nice touch to be better, including:
 
-- Unit tests!
 - Continuous Integration / Continuous Deployment
 - Analytics
 - Offline support (caching)
