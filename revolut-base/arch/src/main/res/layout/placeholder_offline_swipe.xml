@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="view"
+            type="com.svanegas.revolut.currencies.base.arch.statefullayout.SwipeRefreshState" />
+
+        <variable
+            name="viewModel"
+            type="com.svanegas.revolut.currencies.base.arch.statefullayout.SwipeRefreshHolder" />
+
+    </data>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:onRefreshListener="@{() -> view.onPullToRefresh()}"
+        app:refreshColors="@{true}"
+        app:refreshing="@{viewModel.swipeRefreshing}">
+
+        <LinearLayout
+            android:id="@+id/offline_constraint_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/disconnected_image"
+                android:layout_width="@dimen/placeholder_image_size"
+                android:layout_height="@dimen/placeholder_image_size"
+                android:layout_gravity="center"
+                android:layout_marginBottom="@dimen/placeholder_image_margin_bottom"
+                app:lottie_autoPlay="true"
+                app:lottie_fileName="disconnected.json"
+                app:lottie_loop="true" />
+
+            <TextView
+                android:id="@+id/offline_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/global_keyline_horizontal"
+                android:layout_marginEnd="@dimen/global_keyline_horizontal"
+                android:layout_marginBottom="@dimen/placeholder_text_margin_bottom"
+                android:gravity="center"
+                android:lines="4"
+                android:text="@string/no_internet_full_text" />
+
+            <Button
+                android:id="@+id/retry_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:enabled="@{!viewModel.swipeRefreshing}"
+                android:onClick="@{() -> view.onPullToRefresh()}"
+                android:paddingStart="@dimen/retry_button_padding"
+                android:paddingEnd="@dimen/retry_button_padding"
+                android:text="@string/reload" />
+        </LinearLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+</layout>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="view"
+            type="com.svanegas.revolut.currencies.base.arch.statefullayout.SwipeRefreshState" />
+
+        <variable
+            name="viewModel"
+            type="com.svanegas.revolut.currencies.base.arch.statefullayout.SwipeRefreshHolder" />
+
+    </data>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:onRefreshListener="@{() -> view.onPullToRefresh()}"
+        app:refreshColors="@{true}"
+        app:refreshing="@{viewModel.swipeRefreshing}">
+
+        <LinearLayout
+            android:id="@+id/empty_constraint_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/notification_empty_image"
+                android:layout_width="@dimen/placeholder_image_size"
+                android:layout_height="@dimen/placeholder_image_size"
+                android:layout_marginBottom="@dimen/placeholder_image_margin_bottom"
+                app:srcCompat="@drawable/ic_sentiment_satisfied" />
+
+            <TextView
+                android:id="@+id/empty_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/global_keyline_horizontal"
+                android:layout_marginEnd="@dimen/global_keyline_horizontal"
+                android:layout_marginBottom="@dimen/placeholder_text_margin_bottom"
+                android:gravity="center"
+                android:lines="4"
+                android:text="@string/nothing_to_display" />
+
+        </LinearLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+</layout>

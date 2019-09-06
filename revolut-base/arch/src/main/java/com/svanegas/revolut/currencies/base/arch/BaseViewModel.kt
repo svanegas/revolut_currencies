@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import com.svanegas.revolut.currencies.base.logWithTag
+import com.svanegas.revolut.currencies.base.utility.isConnectedToInternet
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
@@ -23,4 +24,6 @@ abstract class BaseViewModel : ViewModel() {
         logWithTag(javaClass.simpleName, "onCleared")
         compositeDisposable.dispose()
     }
+
+    fun isOnline() = isConnectedToInternet(appContext)
 }

@@ -4,6 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import com.jakewharton.rxrelay2.BehaviorRelay
 import com.svanegas.revolut.currencies.base.OpenForMocking
 import com.svanegas.revolut.currencies.base.arch.BaseViewModel
+import com.svanegas.revolut.currencies.base.arch.statefullayout.StatefulLayout
+import com.svanegas.revolut.currencies.base.arch.statefullayout.SwipeRefreshHolder
 import com.svanegas.revolut.currencies.entity.Currency
 import com.svanegas.revolut.currencies.polling.PollingStrategy
 import com.svanegas.revolut.currencies.repository.CurrenciesRepository
@@ -26,7 +28,10 @@ private const val DEFAULT_BASE_CURRENCY_SYMBOL = "EUR"
 class CurrenciesViewModel @Inject constructor(
     private val currenciesRepository: CurrenciesRepository,
     private val pollingStrategy: PollingStrategy
-) : BaseViewModel() {
+) : BaseViewModel(), SwipeRefreshHolder {
+
+    val state = MutableLiveData(StatefulLayout.PROGRESS)
+    override val swipeRefreshing = MutableLiveData(false)
 
     internal var selectedCurrency: Currency = getDefaultCurrency()
 
@@ -92,14 +97,32 @@ class CurrenciesViewModel @Inject constructor(
     fun fetchData() {
         compositeDisposable.clear()
         compositeDisposable += fetchCurrencies()
+            .doOnSubscribe {
+                if (state.value != StatefulLayout.CONTENT) state.value = StatefulLayout.PROGRESS
+            }
+            .subscribeOn(AndroidSchedulers.mainThread())
             .startWith(selectedCurrency)
             .toMap { it.symbol }
             .repeatWhen { pollingStrategy.getPollingMethod(it) }
             .observeOn(AndroidSchedulers.mainThread())
             .flatMap { notifyCurrenciesUpdated(it).toFlowable() }
             .subscribeBy(
-                onError = { Timber.e(it) }
+                onNext = { setupDisplayState() },
+                onError = { handleError(it) }
             )
+    }
+
+    private fun handleError(error: Throwable) {
+        Timber.e(error)
+        state.value = when {
+            !isOnline() -> StatefulLayout.OFFLINE
+            else -> StatefulLayout.ERROR
+        }
+    }
+
+    private fun setupDisplayState() {
+        state.value =
+            if (currencies.value.isNullOrEmpty()) StatefulLayout.EMPTY else StatefulLayout.CONTENT
     }
 
     internal fun fetchCurrencies() = currenciesRepository
