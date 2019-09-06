@@ -3,6 +3,7 @@
 buildscript {
     ext {
         project_directory = "${rootProject.projectDir}"
+        testutils_files = "$project_directory/testUtils/java/"
 
         versions = [
                 'min_sdk'                  : 21,
@@ -27,6 +28,10 @@ buildscript {
                 'crashlytics'              : '2.10.1',
                 'fabric'                   : '1.31.0',
 
+                'junit5'                   : '5.5.1',
+                'mockito'                  : '3.0.0',
+                'core_testing'             : '1.1.1',
+
                 'firebase_core'            : '17.2.0',
                 'firebase_analytics'       : '17.2.0',
 
@@ -35,7 +40,8 @@ buildscript {
                 'rx_rxkotlin'              : '2.4.0',
                 'rx_rxrelay'               : '2.1.1',
 
-                'timber'                   : '4.7.1'
+                'timber'                   : '4.7.1',
+                'lottie'                   : '3.0.7'
         ]
     }
     repositories {
@@ -47,6 +53,7 @@ buildscript {
     dependencies {
         classpath "com.android.tools.build:gradle:${versions.android_gradle}"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
+        classpath "org.jetbrains.kotlin:kotlin-allopen:${versions.kotlin}"
         classpath "com.google.gms:google-services:${versions.google_services}"
         classpath "io.fabric.tools:gradle:${versions.fabric}"
     }

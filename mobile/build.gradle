@@ -4,11 +4,11 @@ apply plugin: 'io.fabric'
 apply from: 'utils.gradle'
 
 ext {
-    version_major = 0
-    version_minor = 3
+    version_major = 1
+    version_minor = 1
     version_patch = 0
     version_classifier = null
-    is_snapshot = true
+    is_snapshot = false
 }
 
 android {
@@ -41,11 +41,14 @@ android {
 
     buildTypes {
         debug {
+            // Disable fabric build ID generation for debug builds
+            ext.enableCrashlytics = false
+            // Only use this flag on builds you don't proguard or upload to beta-by-crashlytics
+            ext.alwaysUpdateBuildId = false
             versionNameSuffix "-debug"
         }
         release {
             signingConfig signingConfigs.release
-            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }

@@ -85,6 +85,7 @@
             android:fontFamily="sans-serif"
             android:hint="@string/convert_input_hint"
             android:inputType="numberDecimal"
+            android:maxLength="20"
             android:text="@={data.amount}"
             android:textColor="@color/black"
             android:textFontWeight="500"
