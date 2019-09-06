@@ -10,9 +10,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.svanegas.revolut.currencies.R
 import com.svanegas.revolut.currencies.base.arch.BaseFragmentViewModel
 import com.svanegas.revolut.currencies.base.arch.BaseView
+import com.svanegas.revolut.currencies.base.arch.statefullayout.PlaceholderErrorWithRetry
+import com.svanegas.revolut.currencies.base.arch.statefullayout.SwipeRefreshState
 import com.svanegas.revolut.currencies.databinding.FragmentCurrenciesBinding
 
-interface CurrenciesView : BaseView
+interface CurrenciesView : BaseView, SwipeRefreshState, PlaceholderErrorWithRetry
 
 class CurrenciesFragment : BaseFragmentViewModel<CurrenciesViewModel, FragmentCurrenciesBinding>(),
     CurrenciesView, CurrencyInteractionCallback {
@@ -40,6 +42,13 @@ class CurrenciesFragment : BaseFragmentViewModel<CurrenciesViewModel, FragmentCu
         binding.currenciesRecycler.adapter = currenciesAdapter
         binding.currenciesRecycler.layoutManager = LinearLayoutManager(requireContext())
     }
+
+    override fun onPullToRefresh() {
+        viewModel.fetchData()
+        viewModel.swipeRefreshing.value = false // Doesn't update UI for unknown reason
+    }
+
+    override fun onErrorRetryClick() = viewModel.fetchData()
 
     private fun setupToolbar() {
         val toolbar: Toolbar = binding.toolbarLayout.findViewById(R.id.toolbar)

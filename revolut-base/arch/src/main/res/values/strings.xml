@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="no_internet_full_text">You are not connected to the internet. Please make sure that cellular data is enabled on your device or that you are connected to a WiFi network.</string>
+    <string name="reload">Reload</string>
+    <string name="nothing_to_display">Nothing to display</string>
+    <string name="retry">Retry</string>
+    <string name="error_title">Sorry!</string>
+    <string name="error_description">There was a problem loading this content</string>
+</resources>

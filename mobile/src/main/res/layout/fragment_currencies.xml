@@ -26,15 +26,27 @@
             android:id="@+id/toolbar_layout"
             layout="@layout/app_toolbar" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/currencies_recycler"
+        <com.svanegas.revolut.currencies.base.arch.statefullayout.StatefulLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:paddingTop="@dimen/currencies_list_padding_top"
-            android:scrollbarStyle="outsideOverlay"
-            android:scrollbars="vertical"
-            app:recyclerAnimator="@{RecyclerAnimator.DEFAULT}"
-            tools:listitem="@layout/currency_item" />
+            app:bindView="@{view}"
+            app:bindViewModel="@{viewModel}"
+            app:emptyLayout="@layout/placeholder_empty_swipe"
+            app:errorLayout="@layout/placeholder_error"
+            app:offlineLayout="@layout/placeholder_offline_swipe"
+            app:progressLayout="@layout/placeholder_progress"
+            app:state="@{viewModel.state}">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/currencies_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingTop="@dimen/currencies_list_padding_top"
+                android:scrollbarStyle="outsideOverlay"
+                android:scrollbars="vertical"
+                app:recyclerAnimator="@{RecyclerAnimator.DEFAULT}"
+                tools:listitem="@layout/currency_item" />
+        </com.svanegas.revolut.currencies.base.arch.statefullayout.StatefulLayout>
     </LinearLayout>
 </layout>

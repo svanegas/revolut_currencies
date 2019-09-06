@@ -40,7 +40,8 @@ buildscript {
                 'rx_rxkotlin'              : '2.4.0',
                 'rx_rxrelay'               : '2.1.1',
 
-                'timber'                   : '4.7.1'
+                'timber'                   : '4.7.1',
+                'lottie'                   : '3.0.7'
         ]
     }
     repositories {
