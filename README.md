@@ -17,6 +17,7 @@
   * [Unit tests](#unit-tests)
   * [Known issues](#known-issues)
   * [What's next?](#whats-next)
+  * [Credits](#credits)
 
 ## Functionality
 
@@ -114,6 +115,13 @@ The project would need a nice touch to be better, including:
 - Offline support (caching)
 - Ability to add and delete currencies from the list
 - ...
+
+## Credits
+
+Lottie animations used in the project:
+- https://lottiefiles.com/719-loading
+- https://lottiefiles.com/1272-disconnected
+- https://lottiefiles.com/2609-face-animation
 
 > Santiago Vanegas
 
