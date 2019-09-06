@@ -101,10 +101,7 @@ or don't specify any flavor or build type and it would do it for each variant.
 
 There are some issues that were identified during the development process but they haven't been solved yet:
 
-- There's no loading screen
-- There's no empty screen
 - The app doesn't provide offline support
-- There is no error management
 - The currency inputs are limited to 20 characters, which will truncate a conversion that would take more
 - When there's several currencies, selecting one from the bottom will create a loop of focus/unfocus, making the app go crazy.
 
