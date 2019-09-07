@@ -1,5 +1,6 @@
 package com.svanegas.revolut.currencies.ui
 
+import com.svanegas.revolut.currencies.base.arch.statefullayout.StatefulLayout
 import com.svanegas.revolut.currencies.entity.Currency
 import com.svanegas.revolut.currencies.entity.CurrencyResponse
 import com.svanegas.revolut.currencies.polling.PollingStrategy
@@ -38,6 +39,7 @@ class CurrenciesViewModelTest {
 
         whenever(repository.fetchCurrencyName(anyString())).thenReturn("")
         whenever(repository.fetchCurrencies(anyString())).thenReturn(Single.never())
+        doReturn(Flowable.never<Any>()).`when`(pollingStrategy).getPollingMethod(kotlinAny())
 
         viewModel = spy(CurrenciesViewModel(repository, pollingStrategy))
     }
@@ -215,7 +217,6 @@ class CurrenciesViewModelTest {
     fun fetchData_callsNotifyCurrenciesUpdated() {
         val currency = Currency(symbol = randomString.nextString())
         doReturn(Flowable.just(currency)).`when`(viewModel).fetchCurrencies()
-        doReturn(Flowable.never<Any>()).`when`(pollingStrategy).getPollingMethod(kotlinAny())
 
         viewModel.fetchData()
 
@@ -227,11 +228,19 @@ class CurrenciesViewModelTest {
         val currency = Currency(symbol = randomString.nextString())
         viewModel.selectedCurrency = currency
         doReturn(Flowable.empty<Currency>()).`when`(viewModel).fetchCurrencies()
-        doReturn(Flowable.never<Any>()).`when`(pollingStrategy).getPollingMethod(kotlinAny())
 
         viewModel.fetchData()
 
         verify(viewModel).notifyCurrenciesUpdated(mutableMapOf(currency.symbol to currency))
+    }
+
+    @Test
+    fun setupDisplayState_whenCurrenciesIsEmpty_setsStateAsEmpty() {
+        viewModel.currencies.value = emptyList()
+
+        viewModel.setupDisplayState()
+
+        assertEquals(StatefulLayout.EMPTY, viewModel.state.value)
     }
 
     @Test
