@@ -16,8 +16,10 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/currency_item_height">
-        <!-- TODO: enable full row listener android:onClick="@{() -> view.onCurrencyClick(data)}"-->
+        android:layout_height="@dimen/currency_item_height"
+        android:background="?attr/selectableItemBackground"
+        android:nextFocusRight="@id/convert_input"
+        android:onClick="@{(view) -> callback.onCurrencyClick(data.symbol, view)}">
 
         <ImageView
             android:id="@+id/flag"
