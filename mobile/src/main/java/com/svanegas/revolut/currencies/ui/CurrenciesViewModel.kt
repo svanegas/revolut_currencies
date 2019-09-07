@@ -129,18 +129,9 @@ class CurrenciesViewModel @Inject constructor(
     internal fun fetchCurrencies() = currenciesRepository
         .fetchCurrencies(selectedCurrency.symbol)
         .observeOn(Schedulers.computation())
-        .flattenAsFlowable { it.rates.entries }
-        .filter { isCurrencyAllowed(it.key) }
-        .map { getCurrencyWithExistingBaseAt(it) }
+        .flattenAsFlowable { it }
+        .filter { isCurrencyAllowed(it.symbol) }
         .map { it.apply { name = currenciesRepository.fetchCurrencyName(it.symbol) } }
-
-    internal fun getCurrencyWithExistingBaseAt(currencyEntry: MutableMap.MutableEntry<String, Double>): Currency {
-        // Not really good way how to keep the previous [baseAt] value
-        return (currenciesMap.value?.get(currencyEntry.key) ?: Currency()).apply {
-            symbol = currencyEntry.key
-            ratio = currencyEntry.value
-        }
-    }
 
     internal fun isCurrencyAllowed(symbol: String) = allowedCurrencies.value
         ?.contains(symbol)
