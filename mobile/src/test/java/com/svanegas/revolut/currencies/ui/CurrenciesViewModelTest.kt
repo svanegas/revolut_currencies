@@ -39,6 +39,7 @@ class CurrenciesViewModelTest {
 
         whenever(repository.fetchCurrencyName(anyString())).thenReturn("")
         whenever(repository.fetchCurrencies(anyString())).thenReturn(Single.never())
+        doReturn(Flowable.never<Any>()).`when`(pollingStrategy).getPollingMethod(kotlinAny())
 
         viewModel = spy(CurrenciesViewModel(repository, pollingStrategy))
     }
@@ -216,7 +217,6 @@ class CurrenciesViewModelTest {
     fun fetchData_callsNotifyCurrenciesUpdated() {
         val currency = Currency(symbol = randomString.nextString())
         doReturn(Flowable.just(currency)).`when`(viewModel).fetchCurrencies()
-        doReturn(Flowable.never<Any>()).`when`(pollingStrategy).getPollingMethod(kotlinAny())
 
         viewModel.fetchData()
 
@@ -228,7 +228,6 @@ class CurrenciesViewModelTest {
         val currency = Currency(symbol = randomString.nextString())
         viewModel.selectedCurrency = currency
         doReturn(Flowable.empty<Currency>()).`when`(viewModel).fetchCurrencies()
-        doReturn(Flowable.never<Any>()).`when`(pollingStrategy).getPollingMethod(kotlinAny())
 
         viewModel.fetchData()
 
