@@ -74,6 +74,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif"
             android:hint="@string/convert_input_hint"
+            android:imeOptions="actionDone"
             android:inputType="numberDecimal"
             android:maxLength="20"
             android:text="@={data.amount}"

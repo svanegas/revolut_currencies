@@ -120,7 +120,7 @@ class CurrenciesViewModel @Inject constructor(
         }
     }
 
-    private fun setupDisplayState() {
+    internal fun setupDisplayState() {
         state.value =
             if (currencies.value.isNullOrEmpty()) StatefulLayout.EMPTY else StatefulLayout.CONTENT
     }
