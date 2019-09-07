@@ -3,55 +3,50 @@ package com.svanegas.revolut.currencies.ui
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.svanegas.revolut.currencies.R
 import com.svanegas.revolut.currencies.base.ui.CustomTextWatcher
+import com.svanegas.revolut.currencies.databinding.AddCurrencyItemBinding
 import com.svanegas.revolut.currencies.databinding.CurrencyItemBinding
+import com.svanegas.revolut.currencies.entity.AddCurrencyItem
 import com.svanegas.revolut.currencies.entity.Currency
+import com.svanegas.revolut.currencies.entity.CurrencyItem
 
 
 interface CurrencyInteractionCallback {
     fun getOnFocusChangeListener(): View.OnFocusChangeListener
     fun onCurrencyClick(symbol: String, view: View)
     fun onTextChanged(symbol: String)
+    fun onAddCurrencyClick()
 }
 
 class CurrenciesAdapter(
     private val interactionCallback: CurrencyInteractionCallback
-) : RecyclerView.Adapter<CurrenciesAdapter.CurrencyViewHolder>() {
+) : RecyclerView.Adapter<CurrenciesAdapter.CurrencyItemViewHolder>() {
 
-    private val currencies: MutableList<Currency> = mutableListOf()
+    private val currencies: MutableList<CurrencyItem> = mutableListOf()
 
     init {
         setHasStableIds(true)
     }
 
-    fun setCurrencyList(currencyList: List<Currency>) {
+    fun setCurrencyList(currencyList: List<CurrencyItem>) {
         val result = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
             override fun getOldListSize(): Int = currencies.size
 
             override fun getNewListSize(): Int = currencyList.size
 
             override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
-                currencies[oldItemPosition].symbol === currencyList[newItemPosition].symbol
+                currencies[oldItemPosition].isItemTheSame(currencyList[newItemPosition])
 
-            override fun areContentsTheSame(
-                oldItemPosition: Int,
-                newItemPosition: Int
-            ): Boolean {
-                val oldCurrency = currencies[oldItemPosition]
-                val newCurrency = currencyList[newItemPosition]
-                return when {
-                    newCurrency.symbol != oldCurrency.symbol -> false
-                    newCurrency.ratio != oldCurrency.ratio -> false
-                    newCurrency.name != oldCurrency.name -> false
-                    newCurrency.amount != oldCurrency.amount -> false
-                    else -> true
-                }
-            }
+            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+                currencies[oldItemPosition].isContentTheSame(currencyList[newItemPosition])
         })
+
         currencies.apply {
             clear()
             addAll(currencyList)
@@ -59,30 +54,50 @@ class CurrenciesAdapter(
         result.dispatchUpdatesTo(this)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CurrencyViewHolder {
-        val binding = DataBindingUtil
-            .inflate<CurrencyItemBinding>(
-                LayoutInflater.from(parent.context),
-                R.layout.currency_item,
-                parent,
-                false
-            )
-        binding.callback = interactionCallback
-        return CurrencyViewHolder(binding)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CurrencyItemViewHolder =
+        when (viewType) {
+            R.layout.add_currency_item -> createHolder<AddCurrencyItemBinding>(parent, viewType)
+            R.layout.currency_item -> createHolder<CurrencyItemBinding>(parent, viewType)
+            else -> throw IllegalStateException("The $viewType is not supported, make sure you specify it in getItemViewType()")
+        }
+
+    private fun <T : ViewDataBinding> createHolder(
+        parent: ViewGroup,
+        @LayoutRes layoutId: Int
+    ): CurrencyItemViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
+        val binding: T = DataBindingUtil.inflate(inflater, layoutId, parent, false)
+        return CurrencyItemViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: CurrencyViewHolder, position: Int) {
-        with(currencies[position]) {
-            holder.binding.data = this
-            holder.binding.convertInput.tag = this.symbol
-            holder.binding.convertInput.addTextChangedListener(getTextWatcher(this.symbol))
+    override fun onBindViewHolder(holder: CurrencyItemViewHolder, position: Int) {
+        when (val item = currencies[position]) {
+            is AddCurrencyItem -> {
+                holder.binding as AddCurrencyItemBinding
+                holder.binding.callback = interactionCallback
+            }
+            is Currency -> {
+                holder.binding as CurrencyItemBinding
+                holder.binding.callback = interactionCallback
+                holder.binding.data = item
+                holder.binding.convertInput.tag = item.symbol
+                holder.binding.convertInput.addTextChangedListener(getTextWatcher(item.symbol))
+            }
         }
         holder.binding.executePendingBindings()
     }
 
     override fun getItemCount(): Int = currencies.size
 
-    override fun getItemId(position: Int): Long = currencies[position].symbol.hashCode().toLong()
+    override fun getItemId(position: Int): Long = when (val item = currencies[position]) {
+        is AddCurrencyItem -> -1
+        is Currency -> item.symbol.hashCode().toLong()
+    }
+
+    override fun getItemViewType(position: Int) = when (currencies[position]) {
+        is AddCurrencyItem -> R.layout.add_currency_item
+        is Currency -> R.layout.currency_item
+    }
 
     // This is very ugly, but I can't come up with a better solution </3
     private fun getTextWatcher(symbol: String) = object : CustomTextWatcher() {
@@ -91,6 +106,6 @@ class CurrenciesAdapter(
         }
     }
 
-    class CurrencyViewHolder(val binding: CurrencyItemBinding) :
+    class CurrencyItemViewHolder(val binding: ViewDataBinding) :
         RecyclerView.ViewHolder(binding.root)
 }

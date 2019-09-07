@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="callback"
+            type="com.svanegas.revolut.currencies.ui.CurrencyInteractionCallback" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/currency_item_height"
+        android:background="?attr/selectableItemBackground"
+        android:onClick="@{() -> callback.onAddCurrencyClick()}">
+
+        <ImageView
+            android:id="@+id/add_currency_icon"
+            android:layout_width="@dimen/currency_icon_size"
+            android:layout_height="@dimen/currency_icon_size"
+            android:layout_marginEnd="@dimen/global_keyline_horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/add_currency_text"
+            app:layout_constraintStart_toStartOf="@id/keyline_start"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/img_add_currency" />
+
+        <TextView
+            android:id="@+id/add_currency_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
+            android:maxLines="1"
+            android:text="@string/add_currency"
+            android:textColor="@color/colorAccent"
+            android:textFontWeight="500"
+            android:textSize="@dimen/currency_item_title_size"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/add_currency_icon"
+            app:layout_constraintEnd_toStartOf="@id/keyline_end"
+            app:layout_constraintStart_toEndOf="@id/add_currency_icon"
+            app:layout_constraintTop_toTopOf="@id/add_currency_icon"
+            tools:targetApi="p" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/keyline_start"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="@dimen/global_keyline_horizontal" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/keyline_end"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_end="@dimen/global_keyline_horizontal" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

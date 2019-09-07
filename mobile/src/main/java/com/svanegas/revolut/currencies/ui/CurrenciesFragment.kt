@@ -17,6 +17,7 @@ import com.svanegas.revolut.currencies.base.arch.BaseView
 import com.svanegas.revolut.currencies.base.arch.statefullayout.PlaceholderErrorWithRetry
 import com.svanegas.revolut.currencies.base.arch.statefullayout.SwipeRefreshState
 import com.svanegas.revolut.currencies.databinding.FragmentCurrenciesBinding
+import com.svanegas.revolut.currencies.entity.AddCurrencyItem
 
 interface CurrenciesView : BaseView, SwipeRefreshState, PlaceholderErrorWithRetry
 
@@ -68,7 +69,7 @@ class CurrenciesFragment : BaseFragmentViewModel<CurrenciesViewModel, FragmentCu
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel.currencies.observe(viewLifecycleOwner, Observer {
-            currenciesAdapter.setCurrencyList(it)
+            currenciesAdapter.setCurrencyList(listOf(AddCurrencyItem) + it)
             // DiffUtil is not working as expected, this is very sad.
             currenciesAdapter.notifyDataSetChanged()
         })
@@ -96,5 +97,9 @@ class CurrenciesFragment : BaseFragmentViewModel<CurrenciesViewModel, FragmentCu
             val imm = view.context.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             imm.showSoftInput(it, SHOW_IMPLICIT)
         }
+    }
+
+    override fun onAddCurrencyClick() {
+        
     }
 }
