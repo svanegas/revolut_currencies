@@ -67,10 +67,10 @@ class CurrenciesViewModel @Inject constructor(
     }
 
     fun setCurrencyAsBase(symbol: String) {
-        val oldCurrency = currenciesMap.value?.get(symbol) ?: return
-        val updatedCurrency = oldCurrency.copy(baseAt = Date())
-        selectedCurrency = updatedCurrency
-        currenciesMap.value?.put(oldCurrency.symbol, updatedCurrency)
+        (currenciesMap.value?.get(symbol) ?: return).apply {
+            baseAt = Date()
+            selectedCurrency = this
+        }
         compositeDisposable += notifyCurrenciesUpdated().subscribe()
 
         fetchData()
@@ -85,6 +85,7 @@ class CurrenciesViewModel @Inject constructor(
             .map { sortedByDate(it) }
             .map { convertRates(it) }
             .observeOn(AndroidSchedulers.mainThread())
+            .doOnSuccess { currenciesRepository.saveCurrenciesToCache(it) }
             .doOnSuccess { this.currencies.value = it }
     }
 
@@ -131,12 +132,14 @@ class CurrenciesViewModel @Inject constructor(
         .flattenAsFlowable { it.rates.entries }
         .filter { isCurrencyAllowed(it.key) }
         .map { getCurrencyWithExistingBaseAt(it) }
-        .map { it.copy(name = currenciesRepository.fetchCurrencyName(it.symbol)) }
+        .map { it.apply { name = currenciesRepository.fetchCurrencyName(it.symbol) } }
 
     internal fun getCurrencyWithExistingBaseAt(currencyEntry: MutableMap.MutableEntry<String, Double>): Currency {
         // Not really good way how to keep the previous [baseAt] value
-        val existing = currenciesMap.value?.get(currencyEntry.key) ?: Currency()
-        return existing.copy(symbol = currencyEntry.key, ratio = currencyEntry.value)
+        return (currenciesMap.value?.get(currencyEntry.key) ?: Currency()).apply {
+            symbol = currencyEntry.key
+            ratio = currencyEntry.value
+        }
     }
 
     internal fun isCurrencyAllowed(symbol: String) = allowedCurrencies.value

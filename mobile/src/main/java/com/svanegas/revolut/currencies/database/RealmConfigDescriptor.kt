@@ -9,5 +9,5 @@ data class RealmConfigDescriptor(
 
     val version: Long = DB_VERSION_LATEST
 
-    val baseModule: Any = Realm.getDefaultModule()!!
+    val baseModule: Any? = Realm.getDefaultModule()
 }

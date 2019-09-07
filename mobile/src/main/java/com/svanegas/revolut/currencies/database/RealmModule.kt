@@ -1,5 +1,6 @@
 package com.svanegas.revolut.currencies.database
 
+import com.svanegas.revolut.currencies.realm.CurrenciesDataRealmModule
 import dagger.Module
 import dagger.Provides
 import io.realm.Realm
@@ -12,7 +13,9 @@ object RealmModule {
     @JvmStatic
     @Singleton
     fun provideRealmConfigDescriptor() = RealmConfigDescriptor(
-        arrayOf()
+        arrayOf(
+            CurrenciesDataRealmModule()
+        )
     )
 
     @Provides

@@ -1,9 +1,12 @@
 package com.svanegas.revolut.currencies.database
 
+import com.svanegas.revolut.currencies.entity.Currency
 import io.realm.DynamicRealm
+import io.realm.FieldAttribute
 import io.realm.RealmMigration
 import io.realm.exceptions.RealmMigrationNeededException
 import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
 
 /**
@@ -12,9 +15,15 @@ import javax.inject.Inject
  * When user opens app, proper migrations are done automatically without the need of incrementing version or similar actions.
  */
 val migrations = mutableListOf<(realm: DynamicRealm) -> Unit>().apply {
-    //    add(0) {
-//
-//    }
+    add(0) { realm ->
+        realm.schema
+            .create(Currency::class.java.simpleName.toString())
+            .addField(Currency.Keys.SYMBOL, String::class.java, FieldAttribute.PRIMARY_KEY)
+            .addField(Currency.Keys.RATIO, Double::class.java)
+            .addField(Currency.Keys.NAME, String::class.java)
+            .addField(Currency.Keys.BASE_AT, Date::class.java)
+            .addField(Currency.Keys.AMOUNT, String::class.java)
+    }
 }
 
 /**
