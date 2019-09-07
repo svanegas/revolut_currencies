@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Since API 27 we can define transparent system navigation bar. -->
+    <style name="Theme.Currencies.Light.SystemNavBarNoDivider" parent="BaseTheme.Currencies.Light.TransparentStatusBar">
+        <item name="android:navigationBarColor">@android:color/white</item>
+        <item name="android:windowLightNavigationBar">true</item>
+    </style>
+</resources>

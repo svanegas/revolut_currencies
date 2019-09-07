@@ -30,7 +30,6 @@ class CurrenciesApplication : BaseApplication() {
     @Suppress("ConstantConditionIf")
     private fun initFabric() {
         if (CurrenciesBaseConfig.IS_RELEASE_BUILD_TYPE) {
-            Timber.d("Start with fabric")
             Fabric.with(applicationContext, Crashlytics())
         }
     }

@@ -14,6 +14,7 @@ import com.svanegas.revolut.currencies.entity.Currency
 
 interface CurrencyInteractionCallback {
     fun getOnFocusChangeListener(): View.OnFocusChangeListener
+    fun onCurrencyClick(symbol: String, view: View)
     fun onTextChanged(symbol: String)
 }
 

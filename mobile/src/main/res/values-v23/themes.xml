@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Since API 23 we can define transparent system status bar. -->
+
+    <style name="BaseTheme.Currencies.Light.TransparentStatusBar" parent="BaseTheme.Currencies.Light">
+        <!-- Abstract theme - should not be used directly. -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+    <style name="Theme.Currencies.Light.SystemNavBarNoDivider" parent="BaseTheme.Currencies.Light.TransparentStatusBar" />
+
+</resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="swipe_refresh">
+        <item>@android:color/holo_blue_bright</item>
+        <item>@android:color/holo_green_light</item>
+        <item>@android:color/holo_orange_light</item>
+        <item>@android:color/holo_red_light</item>
+    </array>
+</resources>

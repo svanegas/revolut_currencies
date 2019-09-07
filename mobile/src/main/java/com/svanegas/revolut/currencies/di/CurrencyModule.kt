@@ -6,7 +6,12 @@ import dagger.Module
 import dagger.Provides
 import retrofit2.create
 
-@Module(includes = [CurrencyActivityBuilderModule::class])
+@Module(
+    includes = [
+        CurrencyActivityBuilderModule::class,
+        PollingStrategyModule::class
+    ]
+)
 object CurrencyModule {
     @Provides
     @JvmStatic
