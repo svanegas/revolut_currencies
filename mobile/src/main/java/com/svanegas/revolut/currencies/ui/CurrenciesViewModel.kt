@@ -9,6 +9,7 @@ import com.svanegas.revolut.currencies.base.arch.statefullayout.SwipeRefreshHold
 import com.svanegas.revolut.currencies.entity.Currency
 import com.svanegas.revolut.currencies.polling.PollingStrategy
 import com.svanegas.revolut.currencies.repository.CurrenciesRepository
+import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -22,7 +23,6 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 private const val TEXT_CHANGE_DEBOUNCE_DELAY_MILLIS = 100L
-private const val DEFAULT_BASE_CURRENCY_SYMBOL = "EUR"
 
 @OpenForMocking
 class CurrenciesViewModel @Inject constructor(
@@ -33,20 +33,22 @@ class CurrenciesViewModel @Inject constructor(
     val state = MutableLiveData(StatefulLayout.PROGRESS)
     override val swipeRefreshing = MutableLiveData(false)
 
-    internal var selectedCurrency: Currency = getDefaultCurrency()
-
     // TODO: This would be to extend with some "Add currency" feature.
     internal val allowedCurrencies = MutableLiveData(
         setOf(
-            DEFAULT_BASE_CURRENCY_SYMBOL, "USD", "GBP", "CZK"
+            "EUR", "USD", "GBP", "CZK"
         )
     )
 
     internal val currenciesMap = MutableLiveData<MutableMap<String, Currency>>(mutableMapOf())
     val currencies = MutableLiveData<List<Currency>>()
 
+    internal var selectedCurrency: Currency = loadSelectedCurrency()
+
     internal val textChangeRelay = BehaviorRelay.create<String>()
     private var textChangeRelayDisposable: Disposable? = null
+
+    private var useCache = true
 
     init {
         fetchData()
@@ -67,13 +69,12 @@ class CurrenciesViewModel @Inject constructor(
     }
 
     fun setCurrencyAsBase(symbol: String) {
-        val oldCurrency = currenciesMap.value?.get(symbol) ?: return
-        val updatedCurrency = oldCurrency.copy(baseAt = Date())
-        selectedCurrency = updatedCurrency
-        currenciesMap.value?.put(oldCurrency.symbol, updatedCurrency)
-        compositeDisposable += notifyCurrenciesUpdated().subscribe()
+        (currenciesMap.value?.get(symbol) ?: return).apply {
+            baseAt = Date()
+            selectedCurrency = this
+        }
 
-        fetchData()
+        fetchData() // will call notifyCurrenciesUpdated()
     }
 
     internal fun notifyCurrenciesUpdated(currencies: MutableMap<String, Currency>? = null): Single<List<Currency>> {
@@ -85,6 +86,7 @@ class CurrenciesViewModel @Inject constructor(
             .map { sortedByDate(it) }
             .map { convertRates(it) }
             .observeOn(AndroidSchedulers.mainThread())
+            .doOnSuccess { currenciesRepository.saveCurrenciesToCache(it) }
             .doOnSuccess { this.currencies.value = it }
     }
 
@@ -96,7 +98,8 @@ class CurrenciesViewModel @Inject constructor(
 
     fun fetchData() {
         compositeDisposable.clear()
-        compositeDisposable += fetchCurrencies()
+        compositeDisposable += Flowable.fromCallable { useCache }
+            .flatMap { fetchCurrencies(it) }
             .doOnSubscribe {
                 if (state.value != StatefulLayout.CONTENT) state.value = StatefulLayout.PROGRESS
             }
@@ -125,31 +128,24 @@ class CurrenciesViewModel @Inject constructor(
             if (currencies.value.isNullOrEmpty()) StatefulLayout.EMPTY else StatefulLayout.CONTENT
     }
 
-    internal fun fetchCurrencies() = currenciesRepository
-        .fetchCurrencies(selectedCurrency.symbol)
+    internal fun fetchCurrencies(useCache: Boolean = false) = currenciesRepository
+        .fetchCurrencies(selectedCurrency.symbol, useCache)
+        // We will only use cache the very first time. Polling won't use cache
+        .doOnSuccess { this.useCache = false }
         .observeOn(Schedulers.computation())
-        .flattenAsFlowable { it.rates.entries }
-        .filter { isCurrencyAllowed(it.key) }
-        .map { getCurrencyWithExistingBaseAt(it) }
-        .map { it.copy(name = currenciesRepository.fetchCurrencyName(it.symbol)) }
-
-    internal fun getCurrencyWithExistingBaseAt(currencyEntry: MutableMap.MutableEntry<String, Double>): Currency {
-        // Not really good way how to keep the previous [baseAt] value
-        val existing = currenciesMap.value?.get(currencyEntry.key) ?: Currency()
-        return existing.copy(symbol = currencyEntry.key, ratio = currencyEntry.value)
-    }
+        .flattenAsFlowable { it }
+        .filter { isCurrencyAllowed(it.symbol) }
+        .map { it.apply { name = currenciesRepository.fetchCurrencyName(it.symbol) } }
 
     internal fun isCurrencyAllowed(symbol: String) = allowedCurrencies.value
         ?.contains(symbol)
         ?: false
 
-    // TODO: Define where to get this default currency from
-    private fun getDefaultCurrency() = Currency(
-        symbol = DEFAULT_BASE_CURRENCY_SYMBOL,
-        baseAt = Date(),
-        name = currenciesRepository.fetchCurrencyName(DEFAULT_BASE_CURRENCY_SYMBOL),
-        amount = "10"
-    )
+    internal fun loadSelectedCurrency() = if (currencies.value.isNullOrEmpty()) {
+        currenciesRepository.fetchDefaultCurrency()
+    } else {
+        currencies.value!!.first()
+    }
 
     internal fun sortedByDate(currencies: List<Currency>) = currencies
         .sortedByDescending { it.baseAt }
