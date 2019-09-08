@@ -1,7 +1,7 @@
 package com.svanegas.revolut.currencies.entity
 
 import com.google.gson.annotations.SerializedName
-import io.realm.RealmModel
+import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 import java.util.*
 
@@ -12,7 +12,7 @@ data class CurrencyResponse(
     val rates: CurrencyMap
 )
 
-sealed class CurrencyItem : TheSame {
+interface CurrencyItem : TheSame {
     override fun isContentTheSame(other: Any) = this === other
     override fun isItemTheSame(other: Any) = this === other
 }
@@ -23,7 +23,7 @@ open class Currency(
     var name: String = "",
     var baseAt: Date? = null,
     var amount: String = ""
-) : CurrencyItem(), RealmModel {
+) : RealmObject(), CurrencyItem {
 
     object Keys {
         const val SYMBOL = "symbol"
@@ -50,4 +50,4 @@ open class Currency(
     }
 }
 
-object AddCurrencyItem : CurrencyItem()
+object AddCurrencyItem : CurrencyItem

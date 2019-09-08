@@ -92,11 +92,13 @@ class CurrenciesAdapter(
     override fun getItemId(position: Int): Long = when (val item = currencies[position]) {
         is AddCurrencyItem -> -1
         is Currency -> item.symbol.hashCode().toLong()
+        else -> throw IllegalStateException("Unknown CurrencyItem type")
     }
 
     override fun getItemViewType(position: Int) = when (currencies[position]) {
         is AddCurrencyItem -> R.layout.add_currency_item
         is Currency -> R.layout.currency_item
+        else -> throw IllegalStateException("Unknown CurrencyItem type")
     }
 
     // This is very ugly, but I can't come up with a better solution </3
