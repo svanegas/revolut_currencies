@@ -23,6 +23,7 @@ buildscript {
                 'dagger'                   : '2.24',
                 'glide'                    : '4.9.0',
                 'google_services'          : '4.3.1',
+                'realm'                    : '5.13.0',
                 'material_design'          : '1.0.0',
 
                 'crashlytics'              : '2.10.1',
@@ -56,6 +57,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-allopen:${versions.kotlin}"
         classpath "com.google.gms:google-services:${versions.google_services}"
         classpath "io.fabric.tools:gradle:${versions.fabric}"
+        classpath "io.realm:realm-gradle-plugin:${versions.realm}"
     }
 }
 

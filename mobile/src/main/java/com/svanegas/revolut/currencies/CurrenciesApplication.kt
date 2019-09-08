@@ -7,6 +7,7 @@ import com.svanegas.revolut.currencies.base.arch.BaseApplication
 import com.svanegas.revolut.currencies.base.arch.extension.lazyUnsafe
 import com.svanegas.revolut.currencies.di.DaggerAppComponent
 import io.fabric.sdk.android.Fabric
+import io.realm.Realm
 import timber.log.Timber
 
 class CurrenciesApplication : BaseApplication() {
@@ -21,10 +22,12 @@ class CurrenciesApplication : BaseApplication() {
     override fun onCreate() {
         super.onCreate()
 
-        appComponent.inject(this)
-
         initFabric()
         initTimber()
+
+        Realm.init(this)
+
+        appComponent.inject(this)
     }
 
     @Suppress("ConstantConditionIf")

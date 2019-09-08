@@ -2,7 +2,6 @@ package com.svanegas.revolut.currencies.ui
 
 import com.svanegas.revolut.currencies.base.arch.statefullayout.StatefulLayout
 import com.svanegas.revolut.currencies.entity.Currency
-import com.svanegas.revolut.currencies.entity.CurrencyResponse
 import com.svanegas.revolut.currencies.polling.PollingStrategy
 import com.svanegas.revolut.currencies.repository.CurrenciesRepository
 import com.svanegas.revolut.currencies.testutils.InstantExecutorExtension
@@ -38,7 +37,8 @@ class CurrenciesViewModelTest {
         setupViewModelTest(this)
 
         whenever(repository.fetchCurrencyName(anyString())).thenReturn("")
-        whenever(repository.fetchCurrencies(anyString())).thenReturn(Single.never())
+        whenever(repository.fetchCurrencies(anyString(), anyBoolean())).thenReturn(Single.never())
+        whenever(repository.fetchDefaultCurrency()).thenReturn(Currency())
         doReturn(Flowable.never<Any>()).`when`(pollingStrategy).getPollingMethod(kotlinAny())
 
         viewModel = spy(CurrenciesViewModel(repository, pollingStrategy))
@@ -108,13 +108,13 @@ class CurrenciesViewModelTest {
     }
 
     @Test
-    fun setCurrencyAsBase_callsNotifyCurrenciesUpdated() {
+    fun setCurrencyAsBase_doesNotCallNotifyCurrenciesUpdated() {
         val symbol = randomString.nextString()
         viewModel.currenciesMap.value = mutableMapOf(symbol to Currency())
 
         viewModel.setCurrencyAsBase(symbol)
 
-        verify(viewModel).notifyCurrenciesUpdated()
+        verify(viewModel, times(0)).notifyCurrenciesUpdated()
     }
 
     @Test
@@ -216,7 +216,7 @@ class CurrenciesViewModelTest {
     @Test
     fun fetchData_callsNotifyCurrenciesUpdated() {
         val currency = Currency(symbol = randomString.nextString())
-        doReturn(Flowable.just(currency)).`when`(viewModel).fetchCurrencies()
+        doReturn(Flowable.just(currency)).`when`(viewModel).fetchCurrencies(anyBoolean())
 
         viewModel.fetchData()
 
@@ -227,7 +227,7 @@ class CurrenciesViewModelTest {
     fun fetchData_startsWithSelectedCurrency() {
         val currency = Currency(symbol = randomString.nextString())
         viewModel.selectedCurrency = currency
-        doReturn(Flowable.empty<Currency>()).`when`(viewModel).fetchCurrencies()
+        doReturn(Flowable.empty<Currency>()).`when`(viewModel).fetchCurrencies(anyBoolean())
 
         viewModel.fetchData()
 
@@ -247,7 +247,7 @@ class CurrenciesViewModelTest {
     fun fetchCurrencies_callsFetchCurrenciesWithSelectedSymbol() {
         val currency = Currency(symbol = randomString.nextString())
         viewModel.selectedCurrency = currency
-        whenever(repository.fetchCurrencies(anyString())).thenReturn(Single.never())
+        whenever(repository.fetchCurrencies(anyString(), anyBoolean())).thenReturn(Single.never())
 
         viewModel.fetchCurrencies()
 
@@ -259,13 +259,15 @@ class CurrenciesViewModelTest {
         val allowedCurrency = Currency(symbol = randomString.nextString())
         val notAllowedCurrency = Currency(symbol = randomString.nextString())
 
-        val response = CurrencyResponse(
-            hashMapOf(
-                allowedCurrency.symbol to random.nextDouble(),
-                notAllowedCurrency.symbol to random.nextDouble()
+        val response = mutableListOf(
+            Currency(symbol = allowedCurrency.symbol),
+            Currency(symbol = notAllowedCurrency.symbol)
+        )
+        whenever(repository.fetchCurrencies(anyString(), anyBoolean())).thenReturn(
+            Single.just(
+                response
             )
         )
-        whenever(repository.fetchCurrencies(anyString())).thenReturn(Single.just(response))
         whenever(viewModel.isCurrencyAllowed(allowedCurrency.symbol)).thenReturn(true)
         whenever(viewModel.isCurrencyAllowed(notAllowedCurrency.symbol)).thenReturn(false)
 
@@ -277,37 +279,22 @@ class CurrenciesViewModelTest {
     }
 
     @Test
-    fun fetchCurrencies_whenCurrencyExists_keepsTheBaseAtDate() {
-        val existingCurrency = Currency(
-            symbol = randomString.nextString(),
-            ratio = random.nextDouble(),
-            baseAt = Date()
-        )
-        viewModel.currenciesMap.value = mutableMapOf(existingCurrency.symbol to existingCurrency)
+    fun loadSelectedCurrency_whenCurrenciesAreNotEmpty_returnsFirstCurrency() {
+        val currency = Currency()
+        viewModel.currencies.value = listOf(currency)
 
-        val newRatio = existingCurrency.ratio * 2
-        val newCurrency = mutableMapOf(
-            existingCurrency.symbol to newRatio
-        )
-
-        with(viewModel.getCurrencyWithExistingBaseAt(newCurrency.entries.first())) {
-            assertEquals(this.symbol, existingCurrency.symbol)
-            assertEquals(this.baseAt, existingCurrency.baseAt)
-            assertEquals(this.ratio, newRatio)
-        }
+        assertEquals(currency, viewModel.loadSelectedCurrency())
     }
 
     @Test
-    fun fetchCurrencies_whenCurrencyDoesNotExist_doesNotKeepTheBaseAtDate() {
-        viewModel.currenciesMap.value = mutableMapOf()
+    fun loadSelectedCurrency_whenCurrenciesAreEmpty_callsFetchDefaultCurrency() {
+        viewModel.currencies.value = listOf()
 
-        val currency = mutableMapOf(
-            randomString.nextString() to random.nextDouble()
-        )
+        reset(repository) // it is called from constructor
+        viewModel.loadSelectedCurrency()
 
-        with(viewModel.getCurrencyWithExistingBaseAt(currency.entries.first())) {
-            assertNull(this.baseAt)
-        }
+
+        verify(repository).fetchDefaultCurrency()
     }
 
     @Test
