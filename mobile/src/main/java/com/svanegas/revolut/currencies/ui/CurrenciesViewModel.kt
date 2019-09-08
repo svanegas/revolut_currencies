@@ -128,7 +128,7 @@ class CurrenciesViewModel @Inject constructor(
             if (currencies.value.isNullOrEmpty()) StatefulLayout.EMPTY else StatefulLayout.CONTENT
     }
 
-    internal fun fetchCurrencies(useCache: Boolean) = currenciesRepository
+    internal fun fetchCurrencies(useCache: Boolean = false) = currenciesRepository
         .fetchCurrencies(selectedCurrency.symbol, useCache)
         // We will only use cache the very first time. Polling won't use cache
         .doOnSuccess { this.useCache = false }
