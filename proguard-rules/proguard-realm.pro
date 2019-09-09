@@ -5,7 +5,9 @@
 # -keep class com.yourcompany.realm.** { *; }
 
 -keep class io.realm.annotations.RealmModule
+-keep class io.realm.annotations.RealmModule { *; }
 -keep @io.realm.annotations.RealmModule class *
+-keep @interface io.realm.annotations.RealmModule { *; }
 -keep class io.realm.internal.Keep
 -keep @io.realm.internal.Keep class *
 -dontwarn javax.**
