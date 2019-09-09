@@ -17,8 +17,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/currency_search_item_height"
-        android:background="?attr/selectableItemBackground">
-        <!--        android:onClick="@{(view) -> callback.onCurrencyClick(data.symbol, view)}"-->
+        android:background="?attr/selectableItemBackground"
+        android:onClick="@{() -> view.onCurrencyClick(data)}">
 
         <ImageView
             android:id="@+id/flag"
@@ -78,6 +78,5 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             app:layout_constraintGuide_end="@dimen/global_keyline_horizontal" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

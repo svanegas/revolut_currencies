@@ -9,7 +9,7 @@ import com.svanegas.revolut.currencies.R
 import com.svanegas.revolut.currencies.databinding.CurrencySearchItemBinding
 import com.svanegas.revolut.currencies.entity.Currency
 
-class CurrencySearchAdapter :
+class CurrencySearchAdapter(val currencySearchView: CurrencySearchView) :
     RecyclerView.Adapter<CurrencySearchAdapter.CurrencySearchItemViewHolder>() {
 
     private val currencies: MutableList<Currency> = mutableListOf()
@@ -50,6 +50,7 @@ class CurrencySearchAdapter :
 
     override fun onBindViewHolder(holder: CurrencySearchItemViewHolder, position: Int) {
         holder.binding.data = currencies[position]
+        holder.binding.view = currencySearchView
         holder.binding.executePendingBindings()
     }
 

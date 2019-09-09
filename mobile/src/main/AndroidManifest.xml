@@ -14,13 +14,17 @@
         tools:ignore="GoogleAppIndexingWarning">
 
         <activity
-            android:name="com.svanegas.revolut.currencies.ui.CurrenciesActivity"
+            android:name="com.svanegas.revolut.currencies.ui.list.CurrenciesActivity"
             android:theme="@style/Theme.Currencies.Light.SystemNavBarNoDivider">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name="com.svanegas.revolut.currencies.ui.search.CurrencySearchActivity"
+            android:theme="@style/Theme.Currencies.Light.SystemNavBarNoDivider" />
 
         <meta-data
             android:name="io.fabric.ApiKey"

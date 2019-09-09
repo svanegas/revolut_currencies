@@ -9,7 +9,6 @@
     android:contentInsetLeft="@dimen/toolbar_content_inset_start"
     app:contentInsetLeft="@dimen/toolbar_content_inset_start"
     app:contentInsetStart="@dimen/toolbar_content_inset_start"
-    app:elevation="0dp"
     app:layout_collapseMode="pin"
     app:layout_scrollFlags="scroll|enterAlways|snap"
     tools:title="Currencies" />

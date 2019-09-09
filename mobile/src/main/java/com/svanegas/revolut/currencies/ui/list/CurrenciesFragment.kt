@@ -1,6 +1,8 @@
 package com.svanegas.revolut.currencies.ui.list
 
+import android.app.Activity
 import android.content.Context.INPUT_METHOD_SERVICE
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,7 +20,7 @@ import com.svanegas.revolut.currencies.base.arch.statefullayout.PlaceholderError
 import com.svanegas.revolut.currencies.base.arch.statefullayout.SwipeRefreshState
 import com.svanegas.revolut.currencies.databinding.FragmentCurrenciesBinding
 import com.svanegas.revolut.currencies.entity.AddCurrencyItem
-import com.svanegas.revolut.currencies.ui.search.CurrencySearchFragment
+import com.svanegas.revolut.currencies.ui.search.CurrencySearchActivity
 
 interface CurrenciesView : BaseView, SwipeRefreshState, PlaceholderErrorWithRetry
 
@@ -26,11 +28,12 @@ class CurrenciesFragment : BaseFragmentViewModel<CurrenciesViewModel, FragmentCu
     CurrenciesView, CurrencyInteractionCallback {
 
     companion object {
+        const val ADD_CURRENCY_REQUEST_CODE = 11
+
         fun newInstance() = CurrenciesFragment()
     }
 
     private lateinit var currenciesAdapter: CurrenciesAdapter
-    private var lastFocusedSymbol = ""
 
     override fun setupViewModel() = findViewModel<CurrenciesViewModel>()
 
@@ -56,7 +59,7 @@ class CurrenciesFragment : BaseFragmentViewModel<CurrenciesViewModel, FragmentCu
     override fun onErrorRetryClick() = viewModel.fetchData()
 
     private fun setupToolbar() {
-        val toolbar: Toolbar = binding.toolbarLayout.findViewById(R.id.toolbar)
+        val toolbar: Toolbar = binding.appToolbarContainer.findViewById(R.id.toolbar)
         toolbar.title = getString(R.string.currencies_list_title)
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
     }
@@ -78,17 +81,13 @@ class CurrenciesFragment : BaseFragmentViewModel<CurrenciesViewModel, FragmentCu
 
     override fun getOnFocusChangeListener() = View.OnFocusChangeListener { view, isFocused ->
         if (isFocused) {
-            val symbol = view.tag?.toString()
-            if (symbol != null && symbol != lastFocusedSymbol) {
-                lastFocusedSymbol = symbol
-                viewModel.setCurrencyAsBase(symbol)
+            view.tag?.toString()?.let {
+                viewModel.refreshFocusedCurrency(it)
             }
         }
     }
 
-    override fun onTextChanged(symbol: String) {
-        viewModel.refreshAmounts(symbol)
-    }
+    override fun onTextChanged(symbol: String) = viewModel.refreshAmounts(symbol)
 
     override fun onCurrencyClick(symbol: String, view: View) {
         // We focus the EditText, so it will trigger the focusChangeListener
@@ -101,11 +100,17 @@ class CurrenciesFragment : BaseFragmentViewModel<CurrenciesViewModel, FragmentCu
     }
 
     override fun onAddCurrencyClick() {
-        requireFragmentManager().beginTransaction().apply {
-            val tag = CurrencySearchFragment::class.java.simpleName
-            replace(R.id.container_fragment, CurrencySearchFragment.newInstance(), tag)
-            addToBackStack(tag)
-            commit()
+        startActivityForResult(
+            Intent(requireContext(), CurrencySearchActivity::class.java),
+            ADD_CURRENCY_REQUEST_CODE
+        )
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == ADD_CURRENCY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            viewModel.reloadAllowedCurrencies()
+        } else {
+            super.onActivityResult(requestCode, resultCode, data)
         }
     }
 }

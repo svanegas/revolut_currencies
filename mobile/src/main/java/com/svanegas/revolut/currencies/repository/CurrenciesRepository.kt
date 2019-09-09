@@ -70,11 +70,10 @@ class CurrenciesRepository @Inject constructor(
         return realm.copyFromRealm(cached)
     }
 
-    fun saveCurrenciesToCache(currencies: List<Currency>) {
-        realm.executeTransaction {
+    fun saveCurrenciesToCache(currencies: List<Currency>) = realm
+        .executeTransaction {
             it.copyToRealmOrUpdate(currencies)
         }
-    }
 
     fun fetchDefaultCurrency(): Currency {
         val currency = realm
@@ -92,18 +91,23 @@ class CurrenciesRepository @Inject constructor(
         amount = "10"
     )
 
-    fun fetchAllowedCurrencies(): Set<String> {
+    fun fetchAllowedCurrencies(): AllowedCurrencies {
         val allowedCurrencies = realm
             .where<AllowedCurrencies>()
-            .findFirst() ?: getDefaultAllowedCurrencies()
-        return allowedCurrencies.currencies.toSet()
+            .findFirst() ?: return getDefaultAllowedCurrencies()
+        return realm.copyFromRealm(allowedCurrencies)
     }
 
     private fun getDefaultAllowedCurrencies(): AllowedCurrencies {
-        var currencies = AllowedCurrencies(currencies = RealmList("EUR", "USD", "GBP", "CZK"))
+        val currencies = AllowedCurrencies(currencies = RealmList("EUR", "USD", "GBP", "CZK"))
         realm.executeTransaction {
-            currencies = it.copyToRealmOrUpdate(currencies)
+            it.copyToRealmOrUpdate(currencies)
         }
         return currencies
     }
+
+    fun saveAllowedCurrenciesToCache(allowedCurrencies: AllowedCurrencies) = realm
+        .executeTransaction {
+            it.copyToRealmOrUpdate(allowedCurrencies)
+        }
 }

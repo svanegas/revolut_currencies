@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import com.svanegas.revolut.currencies.base.arch.BaseViewModel
 import com.svanegas.revolut.currencies.base.arch.statefullayout.StatefulLayout
 import com.svanegas.revolut.currencies.base.arch.statefullayout.SwipeRefreshHolder
+import com.svanegas.revolut.currencies.entity.AllowedCurrencies
 import com.svanegas.revolut.currencies.entity.Currency
 import com.svanegas.revolut.currencies.repository.CurrenciesRepository
 import io.reactivex.rxkotlin.plusAssign
@@ -19,6 +20,7 @@ class CurrencySearchViewModel @Inject constructor(
     override val swipeRefreshing = MutableLiveData(false)
 
     val currencies = MutableLiveData<List<Currency>>()
+    internal val allowedCurrencies = loadAllowedCurrencies()
 
     init {
         fetchData()
@@ -41,11 +43,24 @@ class CurrencySearchViewModel @Inject constructor(
             if (currencies.value.isNullOrEmpty()) StatefulLayout.EMPTY else StatefulLayout.CONTENT
     }
 
+    private fun loadAllowedCurrencies(): AllowedCurrencies = currenciesRepository
+        .fetchAllowedCurrencies()
+
     private fun handleError(error: Throwable) {
         Timber.e(error)
         state.value = when {
             !isOnline() -> StatefulLayout.OFFLINE
             else -> StatefulLayout.ERROR
         }
+    }
+
+    // TODO Make only add
+    fun toggleAllowed(currency: Currency) {
+        if (!allowedCurrencies.contains(currency.symbol)) {
+            allowedCurrencies.currencies.add(currency.symbol)
+        } else {
+            allowedCurrencies.currencies.remove(currency.symbol)
+        }
+        currenciesRepository.saveAllowedCurrenciesToCache(allowedCurrencies)
     }
 }

@@ -6,6 +6,7 @@ import com.svanegas.revolut.currencies.base.OpenForMocking
 import com.svanegas.revolut.currencies.base.arch.BaseViewModel
 import com.svanegas.revolut.currencies.base.arch.statefullayout.StatefulLayout
 import com.svanegas.revolut.currencies.base.arch.statefullayout.SwipeRefreshHolder
+import com.svanegas.revolut.currencies.entity.AllowedCurrencies
 import com.svanegas.revolut.currencies.entity.Currency
 import com.svanegas.revolut.currencies.polling.PollingStrategy
 import com.svanegas.revolut.currencies.repository.CurrenciesRepository
@@ -23,6 +24,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 private const val TEXT_CHANGE_DEBOUNCE_DELAY_MILLIS = 100L
+private const val TEXT_FOCUS_THROTTLE_DELAY_MILLIS = 1000L
 
 @OpenForMocking
 class CurrenciesViewModel @Inject constructor(
@@ -37,16 +39,20 @@ class CurrenciesViewModel @Inject constructor(
     val currencies = MutableLiveData<List<Currency>>()
 
     internal var selectedCurrency: Currency = loadSelectedCurrency()
-    internal val allowedCurrencies = loadAllowedCurrencies()
+    internal var allowedCurrencies = loadAllowedCurrencies()
 
     internal val textChangeRelay = BehaviorRelay.create<String>()
     private var textChangeRelayDisposable: Disposable? = null
+
+    internal val textFocusRelay = BehaviorRelay.create<String>()
+    private var textFocusRelayDisposable: Disposable? = null
 
     private var useCache = true
 
     init {
         fetchData()
         initTextChangeRelay()
+        initTextFocusRelay()
     }
 
     override fun onCleared() {
@@ -60,6 +66,15 @@ class CurrenciesViewModel @Inject constructor(
             .filter { it == selectedCurrency.symbol }
             .flatMap { notifyCurrenciesUpdated().toObservable() }
             .subscribe()
+    }
+
+    private fun initTextFocusRelay() {
+        textFocusRelayDisposable = textFocusRelay
+            .throttleLatest(TEXT_FOCUS_THROTTLE_DELAY_MILLIS, TimeUnit.MILLISECONDS)
+            .filter { it != selectedCurrency.symbol }
+            .subscribeBy(
+                onNext = { setCurrencyAsBase(it) }
+            )
     }
 
     fun setCurrencyAsBase(symbol: String) {
@@ -89,6 +104,8 @@ class CurrenciesViewModel @Inject constructor(
         .toList()
 
     fun refreshAmounts(symbol: String) = textChangeRelay.accept(symbol)
+
+    fun refreshFocusedCurrency(symbol: String) = textFocusRelay.accept(symbol)
 
     fun fetchData() {
         compositeDisposable.clear()
@@ -139,7 +156,13 @@ class CurrenciesViewModel @Inject constructor(
         currencies.value!!.first()
     }
 
-    private fun loadAllowedCurrencies(): Set<String> = currenciesRepository
+    fun reloadAllowedCurrencies() {
+        allowedCurrencies = loadAllowedCurrencies()
+        useCache = true
+        fetchData()
+    }
+
+    private fun loadAllowedCurrencies(): AllowedCurrencies = currenciesRepository
         .fetchAllowedCurrencies()
 
     internal fun sortedByDate(currencies: List<Currency>) = currencies
