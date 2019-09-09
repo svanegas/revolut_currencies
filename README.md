@@ -21,16 +21,19 @@
 
 ## Functionality
 
-The application allows users to check the exchange for a selected set of currencies, which are:
-Euro, US Dollar, British Pound and Czech Koruna.
-
-This initial version restricts to those currencies, but in further versions user will be able to
+The application allows users to check the exchange for a selected set of currencies, where the user is be able to
 choose an additional currency from the list to be converted.
+
+For this version of the app, the number of currencies to be displayed in the list are limited to 6.
+Meaning that if user tries to add an additional currency the app will automatically delete the last
+currency in the list.
 
 Every time the user taps on a currency value, it would go to the top, becoming the **base** currency,
 all the other values are calculated based on the first one.
 
 The list contains live information that is automatically refreshed.
+
+The user is able to delete a currency (except the base) by swiping to the left on the corresponding row.
 
 ## How is it built
 
@@ -102,9 +105,10 @@ or don't specify any flavor or build type and it would do it for each variant.
 
 There are some issues that were identified during the development process but they haven't been solved yet:
 
-- The app doesn't provide offline support
 - The currency inputs are limited to 20 characters, which will truncate a conversion that would take more
-- When there's several currencies, selecting one from the bottom will create a loop of focus/unfocus, making the app go crazy.
+- When there's several currencies, selecting one from the bottom will create a loop of focus/unfocus, caused by the scrolling,
+this issue is still not solved completely, but the workaround so far is to limit the number of shown currencies to 6, in that
+way the chances to get that unexpected behavior are less. This issue should be worked on.
 
 ## What's next?
 
@@ -112,8 +116,6 @@ The project would need a nice touch to be better, including:
 
 - Continuous Integration / Continuous Deployment
 - Analytics
-- Offline support (caching)
-- Ability to add and delete currencies from the list
 - ...
 
 ## Credits

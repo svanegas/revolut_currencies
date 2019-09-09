@@ -99,7 +99,15 @@ class CurrenciesRepository @Inject constructor(
     }
 
     private fun getDefaultAllowedCurrencies(): AllowedCurrencies {
-        val currencies = AllowedCurrencies(currencies = RealmList("EUR", "USD", "GBP", "CZK"))
+        val currencies = AllowedCurrencies(
+            currencies = RealmList(
+                "EUR",
+                "USD",
+                "GBP",
+                "PLN",
+                "RUB"
+            )
+        )
         realm.executeTransaction {
             it.copyToRealmOrUpdate(currencies)
         }

@@ -1,6 +1,7 @@
 package com.svanegas.revolut.currencies.ui
 
 import com.svanegas.revolut.currencies.base.arch.statefullayout.StatefulLayout
+import com.svanegas.revolut.currencies.entity.AllowedCurrencies
 import com.svanegas.revolut.currencies.entity.Currency
 import com.svanegas.revolut.currencies.polling.PollingStrategy
 import com.svanegas.revolut.currencies.repository.CurrenciesRepository
@@ -40,6 +41,7 @@ class CurrenciesViewModelTest {
         whenever(repository.fetchCurrencyName(anyString())).thenReturn("")
         whenever(repository.fetchCurrencies(anyString(), anyBoolean())).thenReturn(Single.never())
         whenever(repository.fetchDefaultCurrency()).thenReturn(Currency())
+        whenever(repository.fetchAllowedCurrencies()).thenReturn(AllowedCurrencies())
         doReturn(Flowable.never<Any>()).`when`(pollingStrategy).getPollingMethod(kotlinAny())
 
         viewModel = spy(CurrenciesViewModel(repository, pollingStrategy))
@@ -301,7 +303,8 @@ class CurrenciesViewModelTest {
     @Test
     fun isCurrencyAllowed_whenAllowed_returnsTrue() {
         val symbol = randomString.nextString()
-        viewModel.allowedCurrencies.value = setOf(symbol)
+        viewModel.allowedCurrencies = mock(AllowedCurrencies::class.java)
+        whenever(viewModel.allowedCurrencies.contains(symbol)).thenReturn(true)
 
         assertTrue(viewModel.isCurrencyAllowed(symbol))
     }
@@ -309,15 +312,8 @@ class CurrenciesViewModelTest {
     @Test
     fun isCurrencyAllowed_whenNotAllowed_returnsFalse() {
         val symbol = randomString.nextString()
-        viewModel.allowedCurrencies.value = setOf()
-
-        assertFalse(viewModel.isCurrencyAllowed(symbol))
-    }
-
-    @Test
-    fun isCurrencyAllowed_whenAllowedCurrenciesAreNull_returnsFalse() {
-        val symbol = randomString.nextString()
-        viewModel.allowedCurrencies.value = null
+        viewModel.allowedCurrencies = mock(AllowedCurrencies::class.java)
+        whenever(viewModel.allowedCurrencies.contains(symbol)).thenReturn(false)
 
         assertFalse(viewModel.isCurrencyAllowed(symbol))
     }
