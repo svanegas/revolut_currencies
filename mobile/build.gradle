@@ -4,8 +4,8 @@ apply plugin: 'io.fabric'
 apply from: 'utils.gradle'
 
 ext {
-    version_major = 1
-    version_minor = 1
+    version_major = 2
+    version_minor = 0
     version_patch = 0
     version_classifier = null
     is_snapshot = false
