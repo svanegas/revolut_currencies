@@ -13,7 +13,11 @@ import java.security.InvalidParameterException
 
 @SuppressLint("DefaultLocale")
 private fun getResourceImage(context: Context, imageName: String?) =
-    context.resources.getIdentifier(imageName?.toLowerCase(), "drawable", context.packageName)
+    context.resources.getIdentifier(
+        "flag_${imageName?.toLowerCase()}",
+        "drawable",
+        context.packageName
+    )
 
 @BindingAdapter(
     value = ["app:imageResName", "app:imageCircular", "app:roundedCorners", "app:imagePlaceholder"],
