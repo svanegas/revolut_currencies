@@ -24,7 +24,7 @@ class CurrenciesRepository @Inject constructor(
 ) {
 
     fun fetchCurrencies(
-        base: String,
+        base: String = "",
         useCache: Boolean = false
     ): Single<MutableList<Currency>> {
         val cacheRequest = if (useCache) getCurrenciesCacheRequest() else Maybe.empty()
@@ -57,7 +57,7 @@ class CurrenciesRepository @Inject constructor(
     private fun saveOrUpdateCurrencyToCache(pair: MutableMap.MutableEntry<String, Double>): Currency {
         var cached = realm.where<Currency>()
             .equalTo(Currency.Keys.SYMBOL, pair.key)
-            .findFirst() ?: Currency(symbol = pair.key)
+            .findFirst() ?: Currency(symbol = pair.key, name = fetchCurrencyName(pair.key))
 
         realm.executeTransaction {
             cached.apply {

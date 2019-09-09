@@ -3,6 +3,7 @@ package com.svanegas.revolut.currencies.ui
 import android.os.Bundle
 import com.svanegas.revolut.currencies.R
 import com.svanegas.revolut.currencies.base.arch.BaseActivity
+import com.svanegas.revolut.currencies.ui.list.CurrenciesFragment
 
 class CurrenciesActivity : BaseActivity() {
 

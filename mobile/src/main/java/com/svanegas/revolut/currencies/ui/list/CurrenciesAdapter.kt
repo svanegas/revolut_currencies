@@ -1,4 +1,4 @@
-package com.svanegas.revolut.currencies.ui
+package com.svanegas.revolut.currencies.ui.list
 
 import android.view.LayoutInflater
 import android.view.View

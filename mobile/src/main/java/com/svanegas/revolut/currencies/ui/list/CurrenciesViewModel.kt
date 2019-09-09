@@ -1,4 +1,4 @@
-package com.svanegas.revolut.currencies.ui
+package com.svanegas.revolut.currencies.ui.list
 
 import androidx.lifecycle.MutableLiveData
 import com.jakewharton.rxrelay2.BehaviorRelay
@@ -135,7 +135,6 @@ class CurrenciesViewModel @Inject constructor(
         .observeOn(Schedulers.computation())
         .flattenAsFlowable { it }
         .filter { isCurrencyAllowed(it.symbol) }
-        .map { it.apply { name = currenciesRepository.fetchCurrencyName(it.symbol) } }
 
     internal fun isCurrencyAllowed(symbol: String) = allowedCurrencies.value
         ?.contains(symbol)

@@ -6,8 +6,8 @@
     <data>
 
         <variable
-            name="callback"
-            type="com.svanegas.revolut.currencies.ui.list.CurrencyInteractionCallback" />
+            name="view"
+            type="com.svanegas.revolut.currencies.ui.search.CurrencySearchView" />
 
         <variable
             name="data"
@@ -16,16 +16,14 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/currency_item_height"
-        android:background="?attr/selectableItemBackground"
-        android:nextFocusRight="@id/convert_input"
-        android:onClick="@{(view) -> callback.onCurrencyClick(data.symbol, view)}">
+        android:layout_height="@dimen/currency_search_item_height"
+        android:background="?attr/selectableItemBackground">
+        <!--        android:onClick="@{(view) -> callback.onCurrencyClick(data.symbol, view)}"-->
 
         <ImageView
             android:id="@+id/flag"
-            android:layout_width="@dimen/currency_icon_size"
-            android:layout_height="@dimen/currency_icon_size"
-            android:layout_marginEnd="@dimen/global_keyline_horizontal"
+            android:layout_width="@dimen/currency_search_icon_size"
+            android:layout_height="@dimen/currency_search_icon_size"
             app:imageCircular="@{true}"
             app:imagePlaceholder="@{@drawable/img_default_flag}"
             app:imageResName="@{data.symbol}"
@@ -37,19 +35,17 @@
 
         <TextView
             android:id="@+id/symbol"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/global_keyline_horizontal"
             android:fontFamily="sans-serif"
             android:maxLines="1"
             android:text="@{data.symbol}"
-            android:textColor="@color/black"
-            android:textFontWeight="500"
+            android:textColor="@color/gray"
             android:textSize="@dimen/currency_item_title_size"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@id/name"
-            app:layout_constraintEnd_toStartOf="@id/convert_input"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/flag"
-            app:layout_constraintTop_toTopOf="@id/flag"
+            app:layout_constraintTop_toTopOf="parent"
             tools:targetApi="p"
             tools:text="USD" />
 
@@ -57,37 +53,17 @@
             android:id="@+id/name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/currency_search_name_margin_start"
             android:fontFamily="sans-serif"
             android:maxLines="1"
-            android:text='@{data.name}'
-            android:textColor="@color/gray"
-            android:textSize="@dimen/currency_subtitle_size"
-            app:layout_constraintBottom_toBottomOf="@id/flag"
-            app:layout_constraintEnd_toEndOf="@id/symbol"
-            app:layout_constraintStart_toStartOf="@id/symbol"
-            app:layout_constraintTop_toBottomOf="@id/symbol"
-            tools:text="US Dollar" />
-
-        <EditText
-            android:id="@+id/convert_input"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="sans-serif"
-            android:hint="@string/convert_input_hint"
-            android:imeOptions="actionDone"
-            android:inputType="numberDecimal"
-            android:maxLength="20"
-            android:text="@={data.amount}"
+            android:text="@{data.name}"
             android:textColor="@color/black"
-            android:textFontWeight="500"
-            android:textSize="@dimen/currency_amount_size"
-            android:textStyle="bold"
-            app:backgroundTint="@color/light_gray"
+            android:textSize="@dimen/currency_item_title_size"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/keyline_end"
-            app:layout_constraintStart_toEndOf="@id/symbol"
+            app:layout_constraintEnd_toStartOf="@id/keyline_end"
+            app:layout_constraintStart_toEndOf="@id/flag"
             app:layout_constraintTop_toTopOf="parent"
-            app:onFocusChange="@{callback.onFocusChangeListener}" />
+            tools:text="US Dollar" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/keyline_start"

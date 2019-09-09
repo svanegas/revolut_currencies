@@ -3,8 +3,11 @@
     <dimen name="currencies_list_padding_top">8dp</dimen>
 
     <dimen name="currency_item_height">72dp</dimen>
+    <dimen name="currency_search_item_height">56dp</dimen>
     <dimen name="currency_icon_size">40dp</dimen>
+    <dimen name="currency_search_icon_size">24dp</dimen>
     <dimen name="currency_item_title_size">16sp</dimen>
     <dimen name="currency_subtitle_size">14sp</dimen>
     <dimen name="currency_amount_size">20sp</dimen>
+    <dimen name="currency_search_name_margin_start">72dp</dimen>
 </resources>

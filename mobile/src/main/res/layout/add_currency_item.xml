@@ -7,7 +7,7 @@
 
         <variable
             name="callback"
-            type="com.svanegas.revolut.currencies.ui.CurrencyInteractionCallback" />
+            type="com.svanegas.revolut.currencies.ui.list.CurrencyInteractionCallback" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

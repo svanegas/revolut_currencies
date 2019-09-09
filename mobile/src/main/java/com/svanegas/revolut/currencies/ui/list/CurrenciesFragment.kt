@@ -1,4 +1,4 @@
-package com.svanegas.revolut.currencies.ui
+package com.svanegas.revolut.currencies.ui.list
 
 import android.content.Context.INPUT_METHOD_SERVICE
 import android.os.Bundle
@@ -18,6 +18,7 @@ import com.svanegas.revolut.currencies.base.arch.statefullayout.PlaceholderError
 import com.svanegas.revolut.currencies.base.arch.statefullayout.SwipeRefreshState
 import com.svanegas.revolut.currencies.databinding.FragmentCurrenciesBinding
 import com.svanegas.revolut.currencies.entity.AddCurrencyItem
+import com.svanegas.revolut.currencies.ui.search.CurrencySearchFragment
 
 interface CurrenciesView : BaseView, SwipeRefreshState, PlaceholderErrorWithRetry
 
@@ -100,6 +101,11 @@ class CurrenciesFragment : BaseFragmentViewModel<CurrenciesViewModel, FragmentCu
     }
 
     override fun onAddCurrencyClick() {
-        
+        requireFragmentManager().beginTransaction().apply {
+            val tag = CurrencySearchFragment::class.java.simpleName
+            replace(R.id.container_fragment, CurrencySearchFragment.newInstance(), tag)
+            addToBackStack(tag)
+            commit()
+        }
     }
 }
