@@ -18,6 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/currency_search_item_height"
         android:background="?attr/selectableItemBackground"
+        android:clickable="@{!data.allowed}"
         android:onClick="@{() -> view.onCurrencyClick(data)}">
 
         <ImageView
@@ -57,7 +58,7 @@
             android:fontFamily="sans-serif"
             android:maxLines="1"
             android:text="@{data.name}"
-            android:textColor="@color/black"
+            android:textColor="@{data.allowed ? @color/gray : @color/black}"
             android:textSize="@dimen/currency_item_title_size"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/keyline_end"

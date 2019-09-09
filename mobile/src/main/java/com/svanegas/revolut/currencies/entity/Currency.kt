@@ -2,6 +2,7 @@ package com.svanegas.revolut.currencies.entity
 
 import com.google.gson.annotations.SerializedName
 import io.realm.RealmObject
+import io.realm.annotations.Ignore
 import io.realm.annotations.PrimaryKey
 import java.util.*
 
@@ -22,7 +23,8 @@ open class Currency(
     var ratio: Double = 1.0,
     var name: String = "",
     var baseAt: Date? = null,
-    var amount: String = ""
+    var amount: String = "",
+    @Ignore var allowed: Boolean = false
 ) : RealmObject(), CurrencyItem {
 
     object Keys {
