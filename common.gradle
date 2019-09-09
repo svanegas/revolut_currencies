@@ -71,6 +71,7 @@ android {
             proguardFile "$project_directory/proguard-rules/proguard-glide.pro"
             proguardFile "$project_directory/proguard-rules/proguard-gson.pro"
             proguardFile "$project_directory/proguard-rules/proguard-square-okhttp3.pro"
+            proguardFile "$project_directory/proguard-rules/proguard-realm.pro"
             proguardFiles getDefaultProguardFile('proguard-android.txt'), "$project_directory/mobile/proguard-rules.pro"
         }
     }
