@@ -25,6 +25,7 @@ import javax.inject.Inject
 
 private const val TEXT_CHANGE_DEBOUNCE_DELAY_MILLIS = 100L
 private const val TEXT_FOCUS_THROTTLE_DELAY_MILLIS = 1000L
+private const val MAX_CURRENCIES_IN_LIST = 6
 
 @OpenForMocking
 class CurrenciesViewModel @Inject constructor(
@@ -157,9 +158,25 @@ class CurrenciesViewModel @Inject constructor(
     }
 
     fun reloadAllowedCurrencies() {
-        allowedCurrencies = loadAllowedCurrencies()
+        allowedCurrencies = keepCurrenciesToLimit(loadAllowedCurrencies())
+
         useCache = true
         fetchData()
+    }
+
+    /**
+     * NOTE: This method is added in order to avoid the glitch about focusing a currency
+     * that is in the bottom. What will happen is that there will be a loop of focus, caused by
+     * the behavior of the scrolling when the currency was focused.
+     */
+    fun keepCurrenciesToLimit(allowedCurrencies: AllowedCurrencies): AllowedCurrencies {
+        if (allowedCurrencies.currencies.size > MAX_CURRENCIES_IN_LIST) {
+            val lastCurrency = currencies.value?.lastOrNull() ?: return allowedCurrencies
+
+            allowedCurrencies.currencies.remove(lastCurrency.symbol)
+            currenciesRepository.saveAllowedCurrenciesToCache(allowedCurrencies)
+        }
+        return allowedCurrencies
     }
 
     fun onCurrencyDeleted(data: Currency) {
