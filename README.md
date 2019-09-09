@@ -116,6 +116,7 @@ The project would need a nice touch to be better, including:
 
 - Continuous Integration / Continuous Deployment
 - Analytics
+- Search feature in the currencies list
 - ...
 
 ## Credits
