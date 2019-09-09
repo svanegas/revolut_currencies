@@ -1,5 +1,5 @@
 # Currencies
-[![Download APK](https://img.shields.io/badge/download-apk-green.svg)](https://github.com/svanegas/revolut_currencies/blob/develop/extras/Currencies-1.1.0-101000-20190903-productionRelease.apk?raw=true)
+[![Download APK](https://img.shields.io/badge/download-apk-green.svg)](https://github.com/svanegas/revolut_currencies/blob/develop/extras/Currencies.apk?raw=true)
 
 <img src="/extras/images/logo.png" width="200">
 
