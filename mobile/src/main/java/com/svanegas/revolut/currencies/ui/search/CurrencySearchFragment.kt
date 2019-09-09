@@ -24,7 +24,7 @@ class CurrencySearchFragment :
         fun newInstance() = CurrencySearchFragment()
     }
 
-    private lateinit var currenciesSearchAdapter: CurrenciesSearchAdapter
+    private lateinit var currencySearchAdapter: CurrencySearchAdapter
 
     override fun setupViewModel() = findViewModel<CurrencySearchViewModel>()
 
@@ -34,7 +34,7 @@ class CurrencySearchFragment :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        currenciesSearchAdapter = CurrenciesSearchAdapter()
+        currencySearchAdapter = CurrencySearchAdapter()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -59,14 +59,14 @@ class CurrencySearchFragment :
 
     private fun setupRecyclerView() {
         binding.currenciesRecycler.setHasFixedSize(true)
-        binding.currenciesRecycler.adapter = currenciesSearchAdapter
+        binding.currenciesRecycler.adapter = currencySearchAdapter
         binding.currenciesRecycler.layoutManager = LinearLayoutManager(requireContext())
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel.currencies.observe(viewLifecycleOwner, Observer {
-            currenciesSearchAdapter.setCurrencyList(it)
+            currencySearchAdapter.setCurrencyList(it)
         })
     }
 }

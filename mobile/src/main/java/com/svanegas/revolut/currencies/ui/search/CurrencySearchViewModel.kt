@@ -28,6 +28,7 @@ class CurrencySearchViewModel @Inject constructor(
         compositeDisposable.clear()
         compositeDisposable += currenciesRepository
             .fetchCurrencies(useCache = true)
+            .map { currencies -> currencies.sortedBy { it.symbol } }
             .doOnSuccess { currencies.value = it }
             .subscribeBy(
                 onSuccess = { setupDisplayState() },

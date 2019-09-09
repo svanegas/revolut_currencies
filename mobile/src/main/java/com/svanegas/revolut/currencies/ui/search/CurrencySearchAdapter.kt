@@ -9,8 +9,8 @@ import com.svanegas.revolut.currencies.R
 import com.svanegas.revolut.currencies.databinding.CurrencySearchItemBinding
 import com.svanegas.revolut.currencies.entity.Currency
 
-class CurrenciesSearchAdapter(
-) : RecyclerView.Adapter<CurrenciesSearchAdapter.CurrencySearchItemViewHolder>() {
+class CurrencySearchAdapter :
+    RecyclerView.Adapter<CurrencySearchAdapter.CurrencySearchItemViewHolder>() {
 
     private val currencies: MutableList<Currency> = mutableListOf()
 
