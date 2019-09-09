@@ -33,17 +33,11 @@ class CurrenciesViewModel @Inject constructor(
     val state = MutableLiveData(StatefulLayout.PROGRESS)
     override val swipeRefreshing = MutableLiveData(false)
 
-    // TODO: This would be to extend with some "Add currency" feature.
-    internal val allowedCurrencies = MutableLiveData(
-        setOf(
-            "EUR", "USD", "GBP", "CZK"
-        )
-    )
-
     internal val currenciesMap = MutableLiveData<MutableMap<String, Currency>>(mutableMapOf())
     val currencies = MutableLiveData<List<Currency>>()
 
     internal var selectedCurrency: Currency = loadSelectedCurrency()
+    internal val allowedCurrencies = loadAllowedCurrencies()
 
     internal val textChangeRelay = BehaviorRelay.create<String>()
     private var textChangeRelayDisposable: Disposable? = null
@@ -136,15 +130,17 @@ class CurrenciesViewModel @Inject constructor(
         .flattenAsFlowable { it }
         .filter { isCurrencyAllowed(it.symbol) }
 
-    internal fun isCurrencyAllowed(symbol: String) = allowedCurrencies.value
-        ?.contains(symbol)
-        ?: false
+    internal fun isCurrencyAllowed(symbol: String) = allowedCurrencies
+        .contains(symbol)
 
     internal fun loadSelectedCurrency() = if (currencies.value.isNullOrEmpty()) {
         currenciesRepository.fetchDefaultCurrency()
     } else {
         currencies.value!!.first()
     }
+
+    private fun loadAllowedCurrencies(): Set<String> = currenciesRepository
+        .fetchAllowedCurrencies()
 
     internal fun sortedByDate(currencies: List<Currency>) = currencies
         .sortedByDescending { it.baseAt }

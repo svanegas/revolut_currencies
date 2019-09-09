@@ -3,11 +3,13 @@ package com.svanegas.revolut.currencies.repository
 import com.svanegas.revolut.currencies.base.OpenForMocking
 import com.svanegas.revolut.currencies.base.utility.applySchedulers
 import com.svanegas.revolut.currencies.base.utility.asMaybe
+import com.svanegas.revolut.currencies.entity.AllowedCurrencies
 import com.svanegas.revolut.currencies.entity.Currency
 import com.svanegas.revolut.currencies.rest.CurrencyRouter
 import io.reactivex.Maybe
 import io.reactivex.Single
 import io.realm.Realm
+import io.realm.RealmList
 import io.realm.Sort
 import io.realm.kotlin.where
 import java.util.*
@@ -89,4 +91,19 @@ class CurrenciesRepository @Inject constructor(
         name = fetchCurrencyName(DEFAULT_BASE_CURRENCY_SYMBOL),
         amount = "10"
     )
+
+    fun fetchAllowedCurrencies(): Set<String> {
+        val allowedCurrencies = realm
+            .where<AllowedCurrencies>()
+            .findFirst() ?: getDefaultAllowedCurrencies()
+        return allowedCurrencies.currencies.toSet()
+    }
+
+    private fun getDefaultAllowedCurrencies(): AllowedCurrencies {
+        var currencies = AllowedCurrencies(currencies = RealmList("EUR", "USD", "GBP", "CZK"))
+        realm.executeTransaction {
+            currencies = it.copyToRealmOrUpdate(currencies)
+        }
+        return currencies
+    }
 }

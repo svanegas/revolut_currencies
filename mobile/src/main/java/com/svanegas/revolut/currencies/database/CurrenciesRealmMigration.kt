@@ -1,5 +1,6 @@
 package com.svanegas.revolut.currencies.database
 
+import com.svanegas.revolut.currencies.entity.AllowedCurrencies
 import com.svanegas.revolut.currencies.entity.Currency
 import io.realm.DynamicRealm
 import io.realm.FieldAttribute
@@ -23,6 +24,13 @@ val migrations = mutableListOf<(realm: DynamicRealm) -> Unit>().apply {
             .addField(Currency.Keys.NAME, String::class.java)
             .addField(Currency.Keys.BASE_AT, Date::class.java)
             .addField(Currency.Keys.AMOUNT, String::class.java)
+    }
+
+    add(1) { realm ->
+        realm.schema
+            .create(AllowedCurrencies::class.java.simpleName.toString())
+            .addField(AllowedCurrencies.Keys.KEY, Long::class.java, FieldAttribute.PRIMARY_KEY)
+            .addRealmListField(AllowedCurrencies.Keys.CURRENCIES, String::class.java)
     }
 }
 
