@@ -12,12 +12,15 @@ import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.svanegas.revolut.currencies.R
 import com.svanegas.revolut.currencies.base.arch.BaseFragmentViewModel
 import com.svanegas.revolut.currencies.base.arch.BaseView
 import com.svanegas.revolut.currencies.base.arch.statefullayout.PlaceholderErrorWithRetry
 import com.svanegas.revolut.currencies.base.arch.statefullayout.SwipeRefreshState
+import com.svanegas.revolut.currencies.databinding.CurrencyItemBinding
 import com.svanegas.revolut.currencies.databinding.FragmentCurrenciesBinding
 import com.svanegas.revolut.currencies.entity.AddCurrencyItem
 import com.svanegas.revolut.currencies.ui.search.CurrencySearchActivity
@@ -68,6 +71,16 @@ class CurrenciesFragment : BaseFragmentViewModel<CurrenciesViewModel, FragmentCu
         binding.currenciesRecycler.setHasFixedSize(true)
         binding.currenciesRecycler.adapter = currenciesAdapter
         binding.currenciesRecycler.layoutManager = LinearLayoutManager(requireContext())
+
+        val swipeHandler = object : SwipeToDeleteCallback(requireContext()) {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                viewHolder as CurrenciesAdapter.CurrencyItemViewHolder
+                viewHolder.binding as CurrencyItemBinding
+                viewModel.onCurrencyDeleted(viewHolder.binding.data ?: return)
+            }
+        }
+        val itemTouchHelper = ItemTouchHelper(swipeHandler)
+        itemTouchHelper.attachToRecyclerView(binding.currenciesRecycler)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

@@ -162,6 +162,13 @@ class CurrenciesViewModel @Inject constructor(
         fetchData()
     }
 
+    fun onCurrencyDeleted(data: Currency) {
+        allowedCurrencies.currencies.remove(data.symbol)
+        currenciesRepository.saveAllowedCurrenciesToCache(allowedCurrencies)
+
+        reloadAllowedCurrencies()
+    }
+
     private fun loadAllowedCurrencies(): AllowedCurrencies = currenciesRepository
         .fetchAllowedCurrencies()
 
