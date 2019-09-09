@@ -9,11 +9,11 @@
 
         <variable
             name="view"
-            type="com.svanegas.revolut.currencies.ui.list.CurrenciesView" />
+            type="com.svanegas.revolut.currencies.ui.search.CurrencySearchView" />
 
         <variable
             name="viewModel"
-            type="com.svanegas.revolut.currencies.ui.list.CurrenciesViewModel" />
+            type="com.svanegas.revolut.currencies.ui.search.CurrencySearchViewModel" />
     </data>
 
     <LinearLayout
@@ -22,18 +22,9 @@
         android:background="@android:color/white"
         android:orientation="vertical">
 
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/app_toolbar_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:elevation="0dp">
-
-            <include
-                layout="@layout/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-        </com.google.android.material.appbar.AppBarLayout>
+        <include
+            android:id="@+id/toolbar_layout"
+            layout="@layout/app_toolbar" />
 
         <com.svanegas.revolut.currencies.base.arch.statefullayout.StatefulLayout
             android:layout_width="match_parent"
@@ -55,7 +46,7 @@
                 android:scrollbarStyle="outsideOverlay"
                 android:scrollbars="vertical"
                 app:recyclerAnimator="@{RecyclerAnimator.DEFAULT}"
-                tools:listitem="@layout/currency_item" />
+                tools:listitem="@layout/currency_search_item" />
         </com.svanegas.revolut.currencies.base.arch.statefullayout.StatefulLayout>
     </LinearLayout>
 </layout>

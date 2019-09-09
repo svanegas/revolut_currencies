@@ -3,11 +3,13 @@ package com.svanegas.revolut.currencies.repository
 import com.svanegas.revolut.currencies.base.OpenForMocking
 import com.svanegas.revolut.currencies.base.utility.applySchedulers
 import com.svanegas.revolut.currencies.base.utility.asMaybe
+import com.svanegas.revolut.currencies.entity.AllowedCurrencies
 import com.svanegas.revolut.currencies.entity.Currency
 import com.svanegas.revolut.currencies.rest.CurrencyRouter
 import io.reactivex.Maybe
 import io.reactivex.Single
 import io.realm.Realm
+import io.realm.RealmList
 import io.realm.Sort
 import io.realm.kotlin.where
 import java.util.*
@@ -24,7 +26,7 @@ class CurrenciesRepository @Inject constructor(
 ) {
 
     fun fetchCurrencies(
-        base: String,
+        base: String = "",
         useCache: Boolean = false
     ): Single<MutableList<Currency>> {
         val cacheRequest = if (useCache) getCurrenciesCacheRequest() else Maybe.empty()
@@ -57,7 +59,7 @@ class CurrenciesRepository @Inject constructor(
     private fun saveOrUpdateCurrencyToCache(pair: MutableMap.MutableEntry<String, Double>): Currency {
         var cached = realm.where<Currency>()
             .equalTo(Currency.Keys.SYMBOL, pair.key)
-            .findFirst() ?: Currency(symbol = pair.key)
+            .findFirst() ?: Currency(symbol = pair.key, name = fetchCurrencyName(pair.key))
 
         realm.executeTransaction {
             cached.apply {
@@ -68,11 +70,10 @@ class CurrenciesRepository @Inject constructor(
         return realm.copyFromRealm(cached)
     }
 
-    fun saveCurrenciesToCache(currencies: List<Currency>) {
-        realm.executeTransaction {
+    fun saveCurrenciesToCache(currencies: List<Currency>) = realm
+        .executeTransaction {
             it.copyToRealmOrUpdate(currencies)
         }
-    }
 
     fun fetchDefaultCurrency(): Currency {
         val currency = realm
@@ -89,4 +90,24 @@ class CurrenciesRepository @Inject constructor(
         name = fetchCurrencyName(DEFAULT_BASE_CURRENCY_SYMBOL),
         amount = "10"
     )
+
+    fun fetchAllowedCurrencies(): AllowedCurrencies {
+        val allowedCurrencies = realm
+            .where<AllowedCurrencies>()
+            .findFirst() ?: return getDefaultAllowedCurrencies()
+        return realm.copyFromRealm(allowedCurrencies)
+    }
+
+    private fun getDefaultAllowedCurrencies(): AllowedCurrencies {
+        val currencies = AllowedCurrencies(currencies = RealmList("EUR", "USD", "GBP", "CZK"))
+        realm.executeTransaction {
+            it.copyToRealmOrUpdate(currencies)
+        }
+        return currencies
+    }
+
+    fun saveAllowedCurrenciesToCache(allowedCurrencies: AllowedCurrencies) = realm
+        .executeTransaction {
+            it.copyToRealmOrUpdate(allowedCurrencies)
+        }
 }

@@ -1,10 +1,10 @@
-package com.svanegas.revolut.currencies.ui
+package com.svanegas.revolut.currencies.ui.search
 
 import android.os.Bundle
 import com.svanegas.revolut.currencies.R
 import com.svanegas.revolut.currencies.base.arch.BaseActivity
 
-class CurrenciesActivity : BaseActivity() {
+class CurrencySearchActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -12,7 +12,7 @@ class CurrenciesActivity : BaseActivity() {
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction().apply {
-                replace(R.id.container_fragment, CurrenciesFragment.newInstance())
+                replace(R.id.container_fragment, CurrencySearchFragment.newInstance())
                 commit()
             }
         }

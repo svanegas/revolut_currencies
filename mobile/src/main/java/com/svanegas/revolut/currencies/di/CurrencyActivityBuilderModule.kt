@@ -2,9 +2,12 @@ package com.svanegas.revolut.currencies.di
 
 import androidx.lifecycle.ViewModel
 import com.svanegas.revolut.currencies.base.di.ViewModelKey
-import com.svanegas.revolut.currencies.ui.CurrenciesActivity
-import com.svanegas.revolut.currencies.ui.CurrenciesFragment
-import com.svanegas.revolut.currencies.ui.CurrenciesViewModel
+import com.svanegas.revolut.currencies.ui.list.CurrenciesActivity
+import com.svanegas.revolut.currencies.ui.list.CurrenciesFragment
+import com.svanegas.revolut.currencies.ui.list.CurrenciesViewModel
+import com.svanegas.revolut.currencies.ui.search.CurrencySearchActivity
+import com.svanegas.revolut.currencies.ui.search.CurrencySearchFragment
+import com.svanegas.revolut.currencies.ui.search.CurrencySearchViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
@@ -23,4 +26,15 @@ abstract class CurrencyActivityBuilderModule {
     @IntoMap
     @ViewModelKey(CurrenciesViewModel::class)
     abstract fun bindCurrenciesViewModel(currenciesViewModel: CurrenciesViewModel): ViewModel
+
+    @ContributesAndroidInjector
+    abstract fun contributeCurrencySearchActivity(): CurrencySearchActivity
+
+    @ContributesAndroidInjector
+    abstract fun contributeCurrencySarchFragment(): CurrencySearchFragment
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(CurrencySearchViewModel::class)
+    abstract fun bindCurrencySearchViewModel(currencySearchViewModel: CurrencySearchViewModel): ViewModel
 }

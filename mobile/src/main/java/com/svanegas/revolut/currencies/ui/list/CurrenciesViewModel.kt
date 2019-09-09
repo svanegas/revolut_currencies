@@ -1,4 +1,4 @@
-package com.svanegas.revolut.currencies.ui
+package com.svanegas.revolut.currencies.ui.list
 
 import androidx.lifecycle.MutableLiveData
 import com.jakewharton.rxrelay2.BehaviorRelay
@@ -6,6 +6,7 @@ import com.svanegas.revolut.currencies.base.OpenForMocking
 import com.svanegas.revolut.currencies.base.arch.BaseViewModel
 import com.svanegas.revolut.currencies.base.arch.statefullayout.StatefulLayout
 import com.svanegas.revolut.currencies.base.arch.statefullayout.SwipeRefreshHolder
+import com.svanegas.revolut.currencies.entity.AllowedCurrencies
 import com.svanegas.revolut.currencies.entity.Currency
 import com.svanegas.revolut.currencies.polling.PollingStrategy
 import com.svanegas.revolut.currencies.repository.CurrenciesRepository
@@ -23,6 +24,8 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 private const val TEXT_CHANGE_DEBOUNCE_DELAY_MILLIS = 100L
+private const val TEXT_FOCUS_THROTTLE_DELAY_MILLIS = 1000L
+private const val MAX_CURRENCIES_IN_LIST = 6
 
 @OpenForMocking
 class CurrenciesViewModel @Inject constructor(
@@ -33,26 +36,24 @@ class CurrenciesViewModel @Inject constructor(
     val state = MutableLiveData(StatefulLayout.PROGRESS)
     override val swipeRefreshing = MutableLiveData(false)
 
-    // TODO: This would be to extend with some "Add currency" feature.
-    internal val allowedCurrencies = MutableLiveData(
-        setOf(
-            "EUR", "USD", "GBP", "CZK"
-        )
-    )
-
     internal val currenciesMap = MutableLiveData<MutableMap<String, Currency>>(mutableMapOf())
     val currencies = MutableLiveData<List<Currency>>()
 
     internal var selectedCurrency: Currency = loadSelectedCurrency()
+    internal var allowedCurrencies = loadAllowedCurrencies()
 
     internal val textChangeRelay = BehaviorRelay.create<String>()
     private var textChangeRelayDisposable: Disposable? = null
+
+    internal val textFocusRelay = BehaviorRelay.create<String>()
+    private var textFocusRelayDisposable: Disposable? = null
 
     private var useCache = true
 
     init {
         fetchData()
         initTextChangeRelay()
+        initTextFocusRelay()
     }
 
     override fun onCleared() {
@@ -66,6 +67,15 @@ class CurrenciesViewModel @Inject constructor(
             .filter { it == selectedCurrency.symbol }
             .flatMap { notifyCurrenciesUpdated().toObservable() }
             .subscribe()
+    }
+
+    private fun initTextFocusRelay() {
+        textFocusRelayDisposable = textFocusRelay
+            .throttleLatest(TEXT_FOCUS_THROTTLE_DELAY_MILLIS, TimeUnit.MILLISECONDS)
+            .filter { it != selectedCurrency.symbol }
+            .subscribeBy(
+                onNext = { setCurrencyAsBase(it) }
+            )
     }
 
     fun setCurrencyAsBase(symbol: String) {
@@ -95,6 +105,8 @@ class CurrenciesViewModel @Inject constructor(
         .toList()
 
     fun refreshAmounts(symbol: String) = textChangeRelay.accept(symbol)
+
+    fun refreshFocusedCurrency(symbol: String) = textFocusRelay.accept(symbol)
 
     fun fetchData() {
         compositeDisposable.clear()
@@ -135,17 +147,47 @@ class CurrenciesViewModel @Inject constructor(
         .observeOn(Schedulers.computation())
         .flattenAsFlowable { it }
         .filter { isCurrencyAllowed(it.symbol) }
-        .map { it.apply { name = currenciesRepository.fetchCurrencyName(it.symbol) } }
 
-    internal fun isCurrencyAllowed(symbol: String) = allowedCurrencies.value
-        ?.contains(symbol)
-        ?: false
+    internal fun isCurrencyAllowed(symbol: String) = allowedCurrencies
+        .contains(symbol)
 
     internal fun loadSelectedCurrency() = if (currencies.value.isNullOrEmpty()) {
         currenciesRepository.fetchDefaultCurrency()
     } else {
         currencies.value!!.first()
     }
+
+    fun reloadAllowedCurrencies() {
+        allowedCurrencies = keepCurrenciesToLimit(loadAllowedCurrencies())
+
+        useCache = true
+        fetchData()
+    }
+
+    /**
+     * NOTE: This method is added in order to avoid the glitch about focusing a currency
+     * that is in the bottom. What will happen is that there will be a loop of focus, caused by
+     * the behavior of the scrolling when the currency was focused.
+     */
+    fun keepCurrenciesToLimit(allowedCurrencies: AllowedCurrencies): AllowedCurrencies {
+        if (allowedCurrencies.currencies.size > MAX_CURRENCIES_IN_LIST) {
+            val lastCurrency = currencies.value?.lastOrNull() ?: return allowedCurrencies
+
+            allowedCurrencies.currencies.remove(lastCurrency.symbol)
+            currenciesRepository.saveAllowedCurrenciesToCache(allowedCurrencies)
+        }
+        return allowedCurrencies
+    }
+
+    fun onCurrencyDeleted(data: Currency) {
+        allowedCurrencies.currencies.remove(data.symbol)
+        currenciesRepository.saveAllowedCurrenciesToCache(allowedCurrencies)
+
+        reloadAllowedCurrencies()
+    }
+
+    private fun loadAllowedCurrencies(): AllowedCurrencies = currenciesRepository
+        .fetchAllowedCurrencies()
 
     internal fun sortedByDate(currencies: List<Currency>) = currencies
         .sortedByDescending { it.baseAt }

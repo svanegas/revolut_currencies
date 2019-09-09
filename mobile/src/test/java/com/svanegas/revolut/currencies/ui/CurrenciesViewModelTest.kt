@@ -8,6 +8,7 @@ import com.svanegas.revolut.currencies.testutils.InstantExecutorExtension
 import com.svanegas.revolut.currencies.testutils.kotlinAny
 import com.svanegas.revolut.currencies.testutils.setupViewModelTest
 import com.svanegas.revolut.currencies.testutils.whenever
+import com.svanegas.revolut.currencies.ui.list.CurrenciesViewModel
 import io.reactivex.Flowable
 import io.reactivex.Single
 import net.bytebuddy.utility.RandomString
